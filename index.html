@@ -32,7 +32,7 @@
           <h1>Supere seus limites.</h1>
           <p>Tênis e artigos esportivos para cada modalidade.</p>
           <a class="btn" href="#catalogo">Ver produtos</a>
-          <a class="btn ghost" href="#categorias">Categorias</a>
+          <a class="btn ghost" href="#ofertas">Ver ofertas</a>
         </div>
       </div>
       <div class="slide" data-word="ESTILO" style="background-image:url(assets/hero-2.jpg)">
@@ -53,13 +53,6 @@
       </div>
     </div>
     <div class="mq" id="mq" aria-hidden="true"></div>
-    <section id="categorias">
-      <div class="wrap">
-        <h2 class="rv">Escolha seu esporte</h2>
-        <div class="cats" id="cats">
-        </div>
-      </div>
-    </section>
     <section class="alt" id="destaques">
       <div class="wrap">
         <h2 class="rv">Em destaque</h2>
@@ -290,15 +283,6 @@
         cats = c.data;
         prods = p.data;
         (s.data || []).forEach((x) => S[x.key] = x.value);
-        $("#cats").innerHTML = cats.map((k) => `<a class="cat rv" href="#catalogo" data-slug="${esc(k.slug)}" style="background-image:url(assets/categorias/${esc(k.slug)}.jpg),linear-gradient(150deg,var(--blue),var(--navy))"><span>${esc(k.name)}</span></a>`).join("");
-        $("#cats").onclick = (e) => {
-          const a = e.target.closest(".cat");
-          if (a) {
-            st.cat = a.dataset.slug;
-            $("#fc").value = st.cat;
-            apply();
-          }
-        };
         $("#fc").innerHTML += cats.map((k) => `<option value="${esc(k.slug)}">${esc(k.name)}</option>`).join("");
         fill("#r-feat", prods.filter((p2) => p2.featured));
         fill("#r-new", prods.filter((p2) => p2.is_new));
