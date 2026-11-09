@@ -100,7 +100,7 @@
         <div class="rv">
           <h2>Instagram</h2>
           <p style="margin-bottom:18px">Novidades e lançamentos todos os dias.</p>
-          <a class="btn" id="ig" target="_blank" rel="noopener" href="#">Seguir a loja</a>
+          <a class="btn" id="ig" target="_blank" rel="noopener" href="https://www.instagram.com/dodoesportestp/">Seguir a loja</a>
         </div>
         <div class="rv loc">
           <h2>Onde estamos</h2>
@@ -304,7 +304,7 @@
           e.preventDefault();
           alert("WhatsApp ainda não configurado.");
         };
-        $("#ig").href = S.instagram || "https://www.instagram.com/dodoesportestp/";
+        $("#ig").href = S.instagram || "#";
         renderLoja();
         const h = () => {
           if (location.hash.startsWith("#p=")) open(location.hash.slice(3));
