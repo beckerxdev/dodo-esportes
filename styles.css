@@ -600,3 +600,21 @@ dialog[open]::backdrop { animation: fade .3s; }
 .about .wrap { position: relative; z-index: 1; }
 .about::before { content: "DODÔ"; position: absolute; right: -2%; top: -10%; font: 800 clamp(160px, 30vw, 420px)/1 'Barlow Condensed', sans-serif; color: transparent; -webkit-text-stroke: 2px rgba(255, 255, 255, .2); translate: 0 var(--ay, 0px); }
 @media (prefers-reduced-motion: reduce) { .mq-t, .wa, .dots .on::after { animation: none !important; } .w > span { transform: none; } }
+
+/* ===== PREÇO DE OFERTA ===== */
+.info s { display: block; margin: 0 0 2px; color: var(--mut); text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: var(--orange); }
+.off { margin-left: 8px; padding: 2px 8px; border-radius: 99px; background: var(--orange); color: #fff; font-size: 12px; font-style: normal; font-weight: 700; }
+
+/* ===== DESTAQUE AO PASSAR O MOUSE ===== */
+.card { transition: transform .3s, box-shadow .3s, opacity .3s, filter .3s, scale .35s, translate .35s; }
+.grid:has(.card:hover) .card:not(:hover),
+.row:has(.card:hover) .card:not(:hover) { opacity: .5; filter: saturate(.5) blur(1px); }
+.card:hover { z-index: 5; scale: 1.05; box-shadow: 0 30px 50px -20px rgba(23, 55, 214, .55); }
+
+/* ===== MOVIMENTO LATERAL NOS CARROSSÉIS ===== */
+.row { padding: 22px 6px 26px; }
+.row .card { scale: var(--s, 1); translate: 0 var(--y, 0px); }
+.row .ph img { transform: translateX(var(--px, 0px)) scale(1.18); }
+.row .card:hover { scale: 1.06; translate: 0 -10px; }
+.row .card:hover .ph img { transform: translateX(var(--px, 0px)) scale(1.26); }
+@media (prefers-reduced-motion: reduce) { .row .card, .row .card:hover { scale: 1; translate: none; } }

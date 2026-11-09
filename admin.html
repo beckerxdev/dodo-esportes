@@ -318,7 +318,7 @@
         }
       }
 
-    
+
       #view > * { animation: in .45s both; }
       .cards .k:nth-child(2) { animation-delay: .06s; } .cards .k:nth-child(3) { animation-delay: .12s; }
       .cards .k:nth-child(4) { animation-delay: .18s; } .cards .k:nth-child(5) { animation-delay: .24s; } .cards .k:nth-child(6) { animation-delay: .3s; }
@@ -326,6 +326,15 @@
       .k:hover, .panel:hover { transform: translateY(-3px); box-shadow: 0 14px 30px -16px rgba(10, 22, 64, .35); }
       @keyframes in { from { opacity: 0; translate: 0 14px; } }
       @media (prefers-reduced-motion: reduce) { #view > *, .k { animation: none !important; } }
+      .sw { position: relative; display: inline-block; width: 44px; height: 24px; margin: 0; }
+      .sw input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; opacity: 0; cursor: pointer; z-index: 1; }
+      .sw i { position: absolute; inset: 0; background: #cdd4ea; border-radius: 99px; transition: background .25s; }
+      .sw i::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; background: #fff; border-radius: 50%; transition: transform .25s; }
+      .sw input:checked + i { background: var(--blue); }
+      .sw input:checked + i::after { transform: translateX(20px); }
+      .sw input:focus-visible + i { outline: 3px solid var(--blue); outline-offset: 2px; }
+      .pv { margin: 12px 0; color: var(--mut); }
+      .pv s { color: #888; }
     </style>
   </head>
   <body>
@@ -389,12 +398,12 @@
       const sb = createClient(CFG.SUPABASE_URL || "https://x.supabase.co", CFG.SUPABASE_ANON_KEY || "x");
       let D = { cats: [], prods: [], set: {} }, tries = 0, lock = 0, user = null;
       const tot = (p) => p.variants.reduce((a, v) => a + v.qty, 0);
-      const status = (p) => !p.active ? ["off", "Inativo"] : tot(p) <= 0 ? ["no", "Esgotado"] : tot(p) <= p.min_stock ? ["lo", "Estoque baixo"] : ["ok", "Dispon\xEDvel"];
+      const status = (p) => !p.active ? ["off", "Inativo"] : tot(p) <= 0 ? ["no", "Esgotado"] : tot(p) <= p.min_stock ? ["lo", "Estoque baixo"] : ["ok", "Disponível"];
       const badge = (p) => {
         const s = status(p);
         return `<span class="st ${s[0]}">${s[1]}</span>`;
       };
-      const MENU = [["dash", "Dashboard"], ["add", "Adicionar produtos"], ["list", "Gerenciar produtos"], ["cats", "Categorias"], ["promo", "Ofertas e promo\xE7\xF5es"], ["stock", "Controle de estoque"], ["cfg", "Configura\xE7\xF5es"]];
+      const MENU = [["dash", "Dashboard"], ["add", "Adicionar produtos"], ["list", "Gerenciar produtos"], ["cats", "Categorias"], ["promo", "Ofertas e promoções"], ["stock", "Controle de estoque"], ["cfg", "Configurações"]];
       $("#side").innerHTML = MENU.map((m) => `<button data-v="${m[0]}">${m[1]}</button>`).join("") + '<button id="so">Sair da conta</button>';
       const menu = (o) => {
         $("#side").classList.toggle("open", o);
@@ -419,7 +428,7 @@
         e.preventDefault();
         if (recovery) {
           const { error: error2 } = await sb.auth.updateUser({ password: $("#pw").value });
-          if (error2) return toast("Senha inv\xE1lida ou link expirado.", false);
+          if (error2) return toast("Senha inválida ou link expirado.", false);
           toast("Senha alterada.");
           return enter();
         }
@@ -457,7 +466,7 @@
         const { data } = await sb.from("admins").select("user_id").eq("user_id", session.user.id).maybeSingle();
         if (!data) {
           await sb.auth.signOut();
-          return toast("Esta conta n\xE3o tem permiss\xE3o de administrador.", false);
+          return toast("Esta conta não tem permissão de administrador.", false);
         }
         user = session.user;
         $("#who").textContent = user.email;
@@ -489,54 +498,76 @@
       $("#bell").onclick = () => show("stock");
       function dash() {
         const P = D.prods, a = P.filter((p) => p.active), pr = P.filter((p) => p.promo_price), lo = P.filter((p) => status(p)[0] === "lo"), no = P.filter((p) => status(p)[0] === "no");
-        const k = [["Produtos", P.length], ["Categorias", D.cats.length], ["Ativos", a.length], ["Em promo\xE7\xE3o", pr.length], ["Estoque baixo", lo.length], ["Esgotados", no.length]];
+        const k = [["Produtos", P.length], ["Categorias", D.cats.length], ["Ativos", a.length], ["Em promoção", pr.length], ["Estoque baixo", lo.length], ["Esgotados", no.length]];
         const by = D.cats.map((c) => [c.name, P.filter((p) => p.category_id === c.id).length]), mx = Math.max(1, ...by.map((x) => x[1]));
         V.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h1>Dashboard</h1><button class="btn" data-go="add">Adicionar produto</button></div>
        <div class="cards">${k.map((x) => `<div class="k">${x[0]}<b>${x[1]}</b></div>`).join("")}</div>
        <div class="two"><div class="panel"><h3>Produtos por categoria</h3>${by.map((x) => `<div class="bar"><span style="width:130px;font-size:13px">${esc(x[0])}</span><i style="width:${x[1] / mx * 60}%;min-width:4px"></i><b>${x[1]}</b></div>`).join("") || "<p>Nenhuma categoria.</p>"}</div>
        <div class="panel"><h3>Alertas de estoque</h3>${[...no, ...lo].map((p) => `<p>${esc(p.name)} ${badge(p)} <small>(${tot(p)} un.)</small></p>`).join("") || "<p>Nenhum alerta.</p>"}</div></div>
-       <div class="panel"><h3>\xDAltimos cadastrados</h3>${P.slice(0, 5).map((p) => `<p>${esc(p.name)} \u2014 ${brl(p.price)} ${badge(p)}</p>`).join("") || "<p>Cadastre o primeiro produto para come\xE7ar.</p>"}</div>
-       <div class="panel"><h3>Acessos r\xE1pidos</h3><button class="btn s" data-go="list">Gerenciar produtos</button> <button class="btn s" data-go="stock">Estoque</button> <button class="btn s" data-go="promo">Promo\xE7\xF5es</button></div>`;
+       <div class="panel"><h3>Últimos cadastrados</h3>${P.slice(0, 5).map((p) => `<p>${esc(p.name)} — ${brl(p.price)} ${badge(p)}</p>`).join("") || "<p>Cadastre o primeiro produto para começar.</p>"}</div>
+       <div class="panel"><h3>Acessos rápidos</h3><button class="btn s" data-go="list">Gerenciar produtos</button> <button class="btn s" data-go="stock">Estoque</button> <button class="btn s" data-go="promo">Promoções</button></div>`;
       }
       V.onclick = (e) => {
         const g = e.target.closest("[data-go]");
         if (g) show(g.dataset.go);
       };
       function list() {
-        V.innerHTML = `<h1>Gerenciar produtos</h1><div class="panel"><input id="ls" placeholder="Pesquisar produto" aria-label="Pesquisar"><table><thead><tr><th>Produto<th>Pre\xE7o<th>Estoque<th>Status<th></thead><tbody id="lb"></tbody></table></div>`;
+        V.innerHTML = `<h1>Gerenciar produtos</h1>
+          <div class="panel">
+            <input id="ls" placeholder="Pesquisar produto" aria-label="Pesquisar">
+            <p style="margin:8px 0;color:var(--mut)">Use os botões para ativar, destacar ou marcar como lançamento. A mudança vale na hora, sem abrir o produto.</p>
+            <table>
+              <thead><tr><th>Produto<th>Preço<th>Estoque<th>Status<th>Ativo<th>Destaque<th>Lançamento<th></thead>
+              <tbody id="lb"></tbody>
+            </table>
+          </div>`;
+        const sw = (p, k, nome) => `<label class="sw"><input type="checkbox" data-t="${k}" data-id="${p.id}" ${p[k] ? "checked" : ""} aria-label="${nome}: ${esc(p.name)}"><i></i></label>`;
         const r = () => {
           const q = $("#ls").value.toLowerCase();
-          $("#lb").innerHTML = D.prods.filter((p) => p.name.toLowerCase().includes(q)).map((p) => `<tr><td>${esc(p.name)}<td>${brl(p.price)}<td>${tot(p)}<td>${badge(p)}<td><button class="btn s" data-e="${p.id}">Editar</button> <button class="btn d" data-d="${p.id}">Excluir</button>`).join("") || "<tr><td colspan=5>Nenhum produto.</tr>";
+          $("#lb").innerHTML = D.prods.filter((p) => p.name.toLowerCase().includes(q)).map((p) => `<tr>
+            <td>${esc(p.name)}<td>${brl(p.price)}<td>${tot(p)}<td>${badge(p)}
+            <td>${sw(p, "active", "Ativo")}<td>${sw(p, "featured", "Destaque")}<td>${sw(p, "is_new", "Lançamento")}
+            <td><button class="btn s" data-e="${p.id}">Editar</button> <button class="btn d" data-d="${p.id}">Excluir</button></tr>`).join("") || "<tr><td colspan=8>Nenhum produto.</tr>";
         };
         r();
         $("#ls").oninput = r;
+        const nomes = { active: ["Produto ativado.", "Produto desativado."], featured: ["Produto em destaque.", "Produto removido dos destaques."], is_new: ["Marcado como lançamento.", "Removido de lançamentos."] };
+        $("#lb").onchange = async (e) => {
+          const c = e.target;
+          if (!c.dataset.t) return;
+          const { error } = await sb.from("products").update({ [c.dataset.t]: c.checked }).eq("id", c.dataset.id);
+          if (error) { c.checked = !c.checked; return toast("Não foi possível alterar.", false); }
+          toast(nomes[c.dataset.t][c.checked ? 0 : 1]);
+          await load();
+          r();
+        };
         $("#lb").onclick = async (e) => {
           const b = e.target.closest("button");
           if (!b) return;
           if (b.dataset.e) return show("edit", b.dataset.e);
           const p = D.prods.find((x) => x.id === b.dataset.d);
-          if (!await ask(`Excluir "${p.name}"? Esta a\xE7\xE3o n\xE3o pode ser desfeita.`)) return;
+          if (!await ask(`Excluir "${p.name}"? Esta ação não pode ser desfeita.`)) return;
           if (p.product_images.length) await sb.storage.from("product-images").remove(p.product_images.map((i) => i.path));
           const { error } = await sb.from("products").delete().eq("id", p.id);
-          if (error) return toast("N\xE3o foi poss\xEDvel excluir.", false);
-          toast("Produto exclu\xEDdo.");
+          if (error) return toast("Não foi possível excluir.", false);
+          toast("Produto excluído.");
           await load();
           list();
         };
       }
       function vrow(v = {}) {
-        return `<div class="vr"><input placeholder="Tamanho" value="${esc(v.size || "\xDAnico")}" maxlength="20" aria-label="Tamanho"><input placeholder="Cor" value="${esc(v.color || "\xDAnico")}" maxlength="30" aria-label="Cor"><input type="number" min="0" step="1" value="${v.qty ?? 0}" aria-label="Quantidade"><button type="button" class="btn d" data-rv aria-label="Remover">\xD7</button></div>`;
+        return `<div class="vr"><input placeholder="Tamanho" value="${esc(v.size || "Único")}" maxlength="20" aria-label="Tamanho"><input placeholder="Cor" value="${esc(v.color || "Único")}" maxlength="30" aria-label="Cor"><input type="number" min="0" step="1" value="${v.qty ?? 0}" aria-label="Quantidade"><button type="button" class="btn d" data-rv aria-label="Remover">×</button></div>`;
       }
       function form(id) {
         const p = id ? D.prods.find((x) => x.id === id) : null, u = p || { variants: [{}], product_images: [] };
         V.innerHTML = `<h1>${p ? "Editar produto" : "Adicionar produto"}</h1><form class="panel" id="pf"><div class="g"><div><label>Nome</label><input name="name" required minlength="2" maxlength="120" value="${esc(p?.name)}"></div><div><label>Marca</label><input name="brand" maxlength="60" value="${esc(p?.brand)}"></div>
        <div><label>Categoria</label><select name="cat"><option value="">Sem categoria</option>${D.cats.map((c) => `<option value="${c.id}" ${p?.category_id === c.id ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select></div>
-       <div><label>Estoque m\xEDnimo</label><input name="min" type="number" min="0" step="1" required value="${p?.min_stock ?? 2}"></div>
-       <div><label>Pre\xE7o (R$)</label><input name="price" type="number" min="0.01" step="0.01" required value="${p?.price ?? ""}"></div><div><label>Pre\xE7o promocional (R$)</label><input name="promo" type="number" min="0.01" step="0.01" value="${p?.promo_price ?? ""}"></div></div>
-       <label>Descri\xE7\xE3o</label><textarea name="desc" rows="4" maxlength="3000">${esc(p?.description)}</textarea>
-       <label>Fotografias (JPG, PNG ou WebP, at\xE9 5 MB)</label><div class="imgs" id="ei">${u.product_images.map((i) => `<div data-id="${i.id}" data-path="${esc(i.path)}"><img src="${esc(sb.storage.from("product-images").getPublicUrl(i.path).data.publicUrl)}" alt=""><button type="button" class="btn d" data-ri style="position:absolute;top:0;right:0;padding:0 7px">\xD7</button></div>`).join("")}</div><input type="file" id="fi" accept="image/jpeg,image/png,image/webp" multiple>
-       <label>Varia\xE7\xF5es e estoque (tamanho, cor, quantidade)</label><div id="vs">${u.variants.map(vrow).join("")}</div><button type="button" class="btn s" id="av">Adicionar varia\xE7\xE3o</button>
-       <p style="margin-top:12px"><label style="display:inline"><input type="checkbox" name="active" style="width:auto" ${p?.active === false ? "" : "checked"}> Ativo</label> &nbsp; <label style="display:inline"><input type="checkbox" name="feat" style="width:auto" ${p?.featured ? "checked" : ""}> Destaque na p\xE1gina inicial</label> &nbsp; <label style="display:inline"><input type="checkbox" name="new" style="width:auto" ${p?.is_new ? "checked" : ""}> Lan\xE7amento</label></p>
+       <div><label>Estoque mínimo</label><input name="min" type="number" min="0" step="1" required value="${p?.min_stock ?? 2}"></div>
+       <div><label>Preço (R$)</label><input name="price" type="number" min="0.01" step="0.01" required value="${p?.price ?? ""}"></div><div><label>Preço promocional (R$)</label><input name="promo" type="number" min="0.01" step="0.01" value="${p?.promo_price ?? ""}"></div></div>
+       <label>Descrição</label><textarea name="desc" rows="4" maxlength="3000">${esc(p?.description)}</textarea>
+       <label>Fotografias (JPG, PNG ou WebP, até 5 MB)</label><div class="imgs" id="ei">${u.product_images.map((i) => `<div data-id="${i.id}" data-path="${esc(i.path)}"><img src="${esc(sb.storage.from("product-images").getPublicUrl(i.path).data.publicUrl)}" alt=""><button type="button" class="btn d" data-ri style="position:absolute;top:0;right:0;padding:0 7px">×</button></div>`).join("")}</div><input type="file" id="fi" accept="image/jpeg,image/png,image/webp" multiple>
+       <label>Variações e estoque (tamanho, cor, quantidade)</label><div id="vs">${u.variants.map(vrow).join("")}</div><button type="button" class="btn s" id="av">Adicionar variação</button>
+       <p style="margin-top:12px"><label style="display:inline"><input type="checkbox" name="active" style="width:auto" ${p?.active === false ? "" : "checked"}> Ativo</label> &nbsp; <label style="display:inline"><input type="checkbox" name="feat" style="width:auto" ${p?.featured ? "checked" : ""}> Destaque na página inicial</label> &nbsp; <label style="display:inline"><input type="checkbox" name="new" style="width:auto" ${p?.is_new ? "checked" : ""}> Lançamento</label></p>
        <button class="btn" style="margin-top:16px" id="sv">Salvar produto</button></form>`;
         $("#av").onclick = () => $("#vs").insertAdjacentHTML("beforeend", vrow());
         $("#vs").onclick = (e) => {
@@ -556,14 +587,14 @@
             show("list");
           } catch (x) {
             console.error(x);
-            toast(x.msg || "N\xE3o foi poss\xEDvel salvar. Verifique os dados.", false);
+            toast(x.msg || "Não foi possível salvar. Verifique os dados.", false);
           }
           b.disabled = false;
         };
       }
       async function save(f, p) {
         const price = +f.price.value, pr = f.promo.value ? +f.promo.value : null;
-        if (pr && pr >= price) throw { msg: "O pre\xE7o promocional deve ser menor que o pre\xE7o." };
+        if (pr && pr >= price) throw { msg: "O preço promocional deve ser menor que o preço." };
         const vs = [...document.querySelectorAll(".vr")].map((r2) => {
           const i = r2.querySelectorAll("input");
           return { size: i[0].value.trim(), color: i[1].value.trim(), qty: +i[2].value };
@@ -572,11 +603,11 @@
         for (const v of vs) {
           if (!v.size || !v.color || !Number.isInteger(v.qty) || v.qty < 0) throw { msg: "Confira tamanhos, cores e quantidades." };
           const k = v.size + "|" + v.color;
-          if (keys.has(k)) throw { msg: "H\xE1 varia\xE7\xF5es repetidas." };
+          if (keys.has(k)) throw { msg: "Há variações repetidas." };
           keys.add(k);
         }
         const files = [...$("#fi").files];
-        for (const x of files) if (!["image/jpeg", "image/png", "image/webp"].includes(x.type) || x.size > 5242880) throw { msg: "Imagem inv\xE1lida: use JPG, PNG ou WebP de at\xE9 5 MB." };
+        for (const x of files) if (!["image/jpeg", "image/png", "image/webp"].includes(x.type) || x.size > 5242880) throw { msg: "Imagem inválida: use JPG, PNG ou WebP de até 5 MB." };
         const row = { name: f.name.value.trim(), brand: f.brand.value.trim() || null, description: f.desc.value.trim() || null, category_id: f.cat.value || null, price, promo_price: pr, min_stock: +f.min.value, active: f.active.checked, featured: f.feat.checked, is_new: f.new.checked };
         const q = p ? sb.from("products").update(row).eq("id", p.id) : sb.from("products").insert(row);
         const { data, error } = await q.select().single();
@@ -602,12 +633,12 @@
       }
       function cats() {
         V.innerHTML = `<h1>Categorias</h1><div class="panel"><form id="cf2" style="display:flex;gap:8px"><input name="n" placeholder="Nova categoria" required minlength="2" maxlength="60"><button class="btn">Adicionar</button></form></div><div class="panel"><table>${D.cats.map((c) => `<tr><td><input value="${esc(c.name)}" data-r="${c.id}" maxlength="60"><td style="width:170px"><button class="btn s" data-s="${c.id}">Salvar</button> <button class="btn d" data-x="${c.id}">Excluir</button></tr>`).join("")}</table></div>`;
-        const slug = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+        const slug = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
         $("#cf2").onsubmit = async (e) => {
           e.preventDefault();
           const n = e.target.n.value.trim();
           const { error } = await sb.from("categories").insert({ name: n, slug: slug(n), sort: D.cats.length + 1 });
-          if (error) return toast("N\xE3o foi poss\xEDvel criar (nome j\xE1 existe?).", false);
+          if (error) return toast("Não foi possível criar (nome já existe?).", false);
           toast("Categoria criada.");
           await load();
           cats();
@@ -620,28 +651,77 @@
             const { error } = await sb.from("categories").update({ name: n, slug: slug(n) }).eq("id", b.dataset.s);
             return error ? toast("Erro ao salvar.", false) : (toast("Categoria salva."), load());
           }
-          if (b.dataset.x && await ask("Excluir categoria? Os produtos ficar\xE3o sem categoria.")) {
+          if (b.dataset.x && await ask("Excluir categoria? Os produtos ficarão sem categoria.")) {
             const { error } = await sb.from("categories").delete().eq("id", b.dataset.x);
             if (error) return toast("Erro ao excluir.", false);
-            toast("Categoria exclu\xEDda.");
+            toast("Categoria excluída.");
             await load();
             cats();
           }
         };
       }
       function promo() {
-        V.innerHTML = `<h1>Ofertas e promo\xE7\xF5es</h1><div class="panel"><table><thead><tr><th>Produto<th>Pre\xE7o<th>Promocional<th></thead>${D.prods.map((p) => `<tr><td>${esc(p.name)}<td>${brl(p.price)}<td style="width:150px"><input type="number" min="0.01" step="0.01" value="${p.promo_price ?? ""}" data-p="${p.id}" aria-label="Promocional"><td><button class="btn s" data-s="${p.id}">Salvar</button></tr>`).join("")}</table></div>`;
-        V.querySelector("table").onclick = async (e) => {
-          const id = e.target.dataset.s;
-          if (!id) return;
-          const v = V.querySelector(`[data-p="${id}"]`).value, p = D.prods.find((x) => x.id === id);
-          if (v && +v >= +p.price) return toast("O pre\xE7o promocional deve ser menor que o pre\xE7o.", false);
-          const { error } = await sb.from("products").update({ promo_price: v ? +v : null }).eq("id", id);
-          error ? toast("Erro ao salvar.", false) : (toast("Promo\xE7\xE3o atualizada."), load());
+        const em = D.prods.filter((p) => p.promo_price);
+        const livres = D.prods.filter((p) => !p.promo_price);
+        const pct = (de, por) => (de > 0 && por > 0 && por < de ? Math.round((1 - por / de) * 100) : 0);
+        const prev = (de, por) => (pct(de, por) ? `<s>${brl(de)}</s> <b>${brl(por)}</b> <span class="st ok">-${pct(de, por)}%</span>` : "O preço com desconto precisa ser menor que o preço sem desconto.");
+        V.innerHTML = `<h1>Ofertas e promoções</h1>
+          <form class="panel" id="of">
+            <h3>Adicionar produto em oferta</h3>
+            <div class="g">
+              <div><label>Produto</label>
+                <select name="p" required><option value="">Escolha um produto</option>${livres.map((p) => `<option value="${p.id}" data-price="${p.price}">${esc(p.name)}</option>`).join("")}</select></div>
+              <div></div>
+              <div><label>Preço sem desconto (aparece riscado)</label><input name="de" type="number" min="0.01" step="0.01" required></div>
+              <div><label>Preço com desconto</label><input name="por" type="number" min="0.01" step="0.01" required></div>
+            </div>
+            <p class="pv" id="pv">Prévia: preencha os dois preços.</p>
+            <button class="btn">Colocar em oferta</button>
+          </form>
+          <div class="panel">
+            <h3>Produtos em oferta</h3>
+            <table>
+              <thead><tr><th>Produto<th>Sem desconto<th>Com desconto<th>Como aparece<th></thead>
+              ${em.map((p) => `<tr><td>${esc(p.name)}
+                <td style="width:140px"><input type="number" min="0.01" step="0.01" value="${p.price}" data-de="${p.id}" aria-label="Preço sem desconto">
+                <td style="width:140px"><input type="number" min="0.01" step="0.01" value="${p.promo_price}" data-po="${p.id}" aria-label="Preço com desconto">
+                <td data-pv="${p.id}">${prev(+p.price, +p.promo_price)}
+                <td><button class="btn s" data-s="${p.id}">Salvar</button> <button class="btn d" data-r="${p.id}">Remover oferta</button></tr>`).join("") || "<tr><td colspan=5>Nenhum produto em oferta ainda.</tr>"}
+            </table>
+          </div>`;
+        const f = $("#of");
+        const upd = () => { $("#pv").innerHTML = "Prévia: " + prev(+f.de.value, +f.por.value); };
+        f.p.onchange = () => { const o = f.p.selectedOptions[0]; if (o && o.dataset.price) f.de.value = o.dataset.price; upd(); };
+        f.de.oninput = upd;
+        f.por.oninput = upd;
+        const salvar = async (id, de, por, msg) => {
+          if (!(por < de)) return toast("O preço com desconto deve ser menor que o preço sem desconto.", false);
+          const { error } = await sb.from("products").update({ price: de, promo_price: por }).eq("id", id);
+          if (error) return toast("Não foi possível salvar a oferta.", false);
+          toast(msg);
+          await load();
+          promo();
+        };
+        f.onsubmit = (e) => { e.preventDefault(); salvar(f.p.value, +f.de.value, +f.por.value, "Produto colocado em oferta."); };
+        const t = V.querySelector("table");
+        t.oninput = (e) => {
+          const id = e.target.dataset.de || e.target.dataset.po;
+          if (id) t.querySelector(`[data-pv="${id}"]`).innerHTML = prev(+t.querySelector(`[data-de="${id}"]`).value, +t.querySelector(`[data-po="${id}"]`).value);
+        };
+        t.onclick = async (e) => {
+          const b = e.target.closest("button");
+          if (!b) return;
+          if (b.dataset.s) return salvar(b.dataset.s, +t.querySelector(`[data-de="${b.dataset.s}"]`).value, +t.querySelector(`[data-po="${b.dataset.s}"]`).value, "Oferta atualizada.");
+          const { error } = await sb.from("products").update({ promo_price: null }).eq("id", b.dataset.r);
+          if (error) return toast("Não foi possível remover.", false);
+          toast("Oferta removida.");
+          await load();
+          promo();
         };
       }
+
       function stock() {
-        V.innerHTML = `<h1>Controle de estoque</h1>${D.prods.map((p) => `<div class="panel"><b>${esc(p.name)}</b> ${badge(p)} <small>m\xEDnimo ${p.min_stock}</small>${p.variants.map((v) => `<div class="vr" style="grid-template-columns:1fr 1fr 90px"><span>${esc(v.size)}</span><span>${esc(v.color)}</span><input type="number" min="0" step="1" value="${v.qty}" data-v="${v.id}" aria-label="Quantidade ${esc(v.size)} ${esc(v.color)}"></div>`).join("")}<button class="btn s" data-s="${p.id}">Salvar estoque</button></div>`).join("") || "<p>Nenhum produto.</p>"}`;
+        V.innerHTML = `<h1>Controle de estoque</h1>${D.prods.map((p) => `<div class="panel"><b>${esc(p.name)}</b> ${badge(p)} <small>mínimo ${p.min_stock}</small>${p.variants.map((v) => `<div class="vr" style="grid-template-columns:1fr 1fr 90px"><span>${esc(v.size)}</span><span>${esc(v.color)}</span><input type="number" min="0" step="1" value="${v.qty}" data-v="${v.id}" aria-label="Quantidade ${esc(v.size)} ${esc(v.color)}"></div>`).join("")}<button class="btn s" data-s="${p.id}">Salvar estoque</button></div>`).join("") || "<p>Nenhum produto.</p>"}`;
         V.onclick = async (e) => {
           const id = e.target.dataset.s;
           if (!id) return;
@@ -650,7 +730,7 @@
           for (const v of p.variants) {
             const n = +V.querySelector(`[data-v="${v.id}"]`).value;
             if (!Number.isInteger(n) || n < 0) {
-              return toast("Quantidade inv\xE1lida.", false);
+              return toast("Quantidade inválida.", false);
             }
             if (n !== v.qty) {
               const { error } = await sb.from("variants").update({ qty: n }).eq("id", v.id);
@@ -663,15 +743,15 @@
         };
       }
       function cfg() {
-        const F = [["store_name", "Nome da loja"], ["whatsapp", "WhatsApp (com DDD, s\xF3 n\xFAmeros, ex.: 5535999999999)"], ["instagram", "Link do Instagram"], ["address", "Endere\xE7o"], ["hours", "Hor\xE1rio de funcionamento"], ["show_qty", "Mostrar quantidade ao cliente (true/false)"]];
-        V.innerHTML = `<h1>Configura\xE7\xF5es</h1><form class="panel" id="cg">${F.map((f) => `<label>${f[1]}</label><input name="${f[0]}" maxlength="500" value="${esc(D.set[f[0]])}">`).join("")}<button class="btn" style="margin-top:16px">Salvar</button></form>`;
+        const F = [["store_name", "Nome da loja"], ["whatsapp", "WhatsApp (com DDD, só números, ex.: 5535999999999)"], ["instagram", "Link do Instagram"], ["address", "Endereço"], ["hours", "Horário de funcionamento"], ["show_qty", "Mostrar quantidade ao cliente (true/false)"]];
+        V.innerHTML = `<h1>Configurações</h1><form class="panel" id="cg">${F.map((f) => `<label>${f[1]}</label><input name="${f[0]}" maxlength="500" value="${esc(D.set[f[0]])}">`).join("")}<button class="btn" style="margin-top:16px">Salvar</button></form>`;
         $("#cg").onsubmit = async (e) => {
           e.preventDefault();
           const d = Object.fromEntries(new FormData(e.target));
-          if (d.whatsapp && !/^\d{12,13}$/.test(d.whatsapp)) return toast("WhatsApp: use s\xF3 n\xFAmeros com 55 + DDD + n\xFAmero.", false);
-          if (d.instagram && !/^https:\/\//.test(d.instagram)) return toast("O link do Instagram deve come\xE7ar com https://", false);
+          if (d.whatsapp && !/^\d{12,13}$/.test(d.whatsapp)) return toast("WhatsApp: use só números com 55 + DDD + número.", false);
+          if (d.instagram && !/^https:\/\//.test(d.instagram)) return toast("O link do Instagram deve começar com https://", false);
           const { error } = await sb.from("store_settings").upsert(Object.entries(d).map(([key, value]) => ({ key, value })));
-          error ? toast("Erro ao salvar.", false) : (toast("Configura\xE7\xF5es salvas."), load());
+          error ? toast("Erro ao salvar.", false) : (toast("Configurações salvas."), load());
         };
       }
       enter();

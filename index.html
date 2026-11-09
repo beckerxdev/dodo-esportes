@@ -6,7 +6,7 @@
     <title>Dodô Esportes | Tênis e artigos esportivos em Três Pontas</title>
     <meta name="description" content="Tudo o que você precisa para a sua prática esportiva. Compre pelo WhatsApp.">
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
   </head>
   <body>
     <div id="prog"></div>
@@ -131,9 +131,12 @@
       const url = (p) => sb.storage.from("product-images").getPublicUrl(p).data.publicUrl;
       const stock = (p) => p.variants.reduce((a, v) => a + v.qty, 0), promo = (p) => p.promo_price && +p.promo_price < +p.price, eff = (p) => promo(p) ? +p.promo_price : +p.price;
       const imgs = (p) => [...p.product_images].sort((a, b) => a.sort - b.sort).map((i) => url(i.path));
-      const priceH = (p) => promo(p) ? `<s>${brl(p.price)}</s><b>${brl(p.promo_price)}</b>` : `<b>${brl(p.price)}</b>`;
+      const pct = (p) => Math.round((1 - p.promo_price / p.price) * 100);
+      const priceH = (p) => promo(p)
+        ? `<s>${brl(p.price)}</s><b>${brl(p.promo_price)}</b><em class="off">-${pct(p)}%</em>`
+        : `<b>${brl(p.price)}</b>`;
       const card = (p) => {
-        const i = imgs(p)[0], t = stock(p) <= 0 ? '<span class="tag o">Esgotado</span>' : promo(p) ? '<span class="tag">Promo\xE7\xE3o</span>' : p.is_new ? '<span class="tag n">Lan\xE7amento</span>' : "";
+        const i = imgs(p)[0], t = stock(p) <= 0 ? '<span class="tag o">Esgotado</span>' : promo(p) ? '<span class="tag">Promoção</span>' : p.is_new ? '<span class="tag n">Lançamento</span>' : "";
         return `<article class="card rv" data-id="${p.id}" tabindex="0" role="button" aria-label="${esc(p.name)}">${t}<div class="ph">${i ? `<img loading="lazy" src="${esc(i)}" alt="${esc(p.name)}">` : `<b>${esc(p.name[0])}</b>`}</div><div class="info"><small>${esc(p.brand || p.categories?.name || "")}</small><h3>${esc(p.name)}</h3>${priceH(p)}</div></article>`;
       };
       const fill = (id, l) => {
@@ -170,18 +173,18 @@
         const draw = () => {
           const sizes = ds(vs.map((v2) => v2.size)), cols = ds(vs.map((v2) => v2.color)), v = vs.find((x) => x.size === sel.s && x.color === sel.c), q = v ? v.qty : 0;
           const link = location.origin + location.pathname + "#p=" + p.id;
-          const msg = `Ol\xE1! Tenho interesse neste produto:
+          const msg = `Olá! Tenho interesse neste produto:
       *${p.name}*
-      Pre\xE7o: ${brl(eff(p))}
+      Preço: ${brl(eff(p))}
       Tamanho: ${sel.s || "-"}
       Cor: ${sel.c || "-"}
       ${link}`;
           const href = wa(msg);
-          d.innerHTML = `<button class="x" aria-label="Fechar">\xD7</button><div class="pd"><div class="gal"><div class="ph" id="main">${im[0] ? `<img src="${esc(im[0])}" alt="${esc(p.name)}">` : `<b>${esc(p.name[0])}</b>`}</div><div class="th">${im.map((u, i) => `<img src="${esc(u)}" alt="" data-i="${i}" class="${i ? "" : "on"}">`).join("")}</div></div>
+          d.innerHTML = `<button class="x" aria-label="Fechar">×</button><div class="pd"><div class="gal"><div class="ph" id="main">${im[0] ? `<img src="${esc(im[0])}" alt="${esc(p.name)}">` : `<b>${esc(p.name[0])}</b>`}</div><div class="th">${im.map((u, i) => `<img src="${esc(u)}" alt="" data-i="${i}" class="${i ? "" : "on"}">`).join("")}</div></div>
       <div class="det"><small>${esc(p.brand || "")}</small><h2>${esc(p.name)}</h2><div style="font-size:22px">${priceH(p)}</div><p style="margin:14px 0;color:var(--mut);white-space:pre-line">${esc(p.description || "")}</p>
       <b>Tamanho</b><div class="opts">${sizes.map((s) => `<button class="opt ${s === sel.s ? "on" : ""}" data-s="${esc(s)}" ${vs.some((x) => x.size === s && x.qty > 0) ? "" : "disabled"}>${esc(s)}</button>`).join("")}</div>
       <b>Cor</b><div class="opts">${cols.map((c) => `<button class="opt ${c === sel.c ? "on" : ""}" data-c="${esc(c)}" ${vs.some((x) => x.color === c && x.size === sel.s && x.qty > 0) ? "" : "disabled"}>${esc(c)}</button>`).join("")}</div>
-      <p>${q > 0 ? `<span class="ok">Dispon\xEDvel${S.show_qty === "true" ? ` (${q} un.)` : ""}</span>` : '<span class="no">Indispon\xEDvel nesta varia\xE7\xE3o</span>'}</p>
+      <p>${q > 0 ? `<span class="ok">Disponível${S.show_qty === "true" ? ` (${q} un.)` : ""}</span>` : '<span class="no">Indisponível nesta variação</span>'}</p>
       <a class="buy" ${href && q > 0 ? `href="${href}" target="_blank" rel="noopener"` : 'href="#" aria-disabled="true"'} id="buy">ADQUIRIR PELO WHATSAPP</a></div></div>`;
         };
         draw();
@@ -204,7 +207,7 @@
             d.querySelectorAll(".th img").forEach((x) => x.classList.toggle("on", x === t));
           } else if (t.id === "buy" && !t.getAttribute("href").startsWith("http")) {
             e.preventDefault();
-            alert(wa("") ? "Selecione uma varia\xE7\xE3o dispon\xEDvel." : "O WhatsApp da loja ainda n\xE3o foi configurado.");
+            alert(wa("") ? "Selecione uma variação disponível." : "O WhatsApp da loja ainda não foi configurado.");
           }
         };
         d.onclose = () => {
@@ -281,7 +284,7 @@
         sb = createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
         const [c, p, s] = await Promise.all([sb.from("categories").select("*").order("sort"), sb.from("products").select("*,categories(name,slug),product_images(path,sort),variants(size,color,qty)").eq("active", true).order("created_at", { ascending: false }), sb.from("store_settings").select("*")]);
         if (c.error || p.error) {
-          $("#grid").innerHTML = '<p class="empty">N\xE3o foi poss\xEDvel carregar os produtos agora. Tente novamente em instantes.</p>';
+          $("#grid").innerHTML = '<p class="empty">Não foi possível carregar os produtos agora. Tente novamente em instantes.</p>';
           return;
         }
         cats = c.data;
@@ -301,17 +304,17 @@
         fill("#r-new", prods.filter((p2) => p2.is_new));
         fill("#r-off", prods.filter(promo));
         apply();
-        const w = wa("Ol\xE1! Vim pelo site e gostaria de atendimento.");
+        const w = wa("Olá! Vim pelo site e gostaria de atendimento.");
         $("#wa").href = w || "#";
         if (!w) $("#wa").onclick = (e) => {
           e.preventDefault();
-          alert("WhatsApp ainda n\xE3o configurado.");
+          alert("WhatsApp ainda não configurado.");
         };
         $("#ig").href = S.instagram || "#";
         $("#addr").textContent = S.address || "";
-        $("#hours").textContent = S.hours ? "Hor\xE1rio: " + S.hours : "";
+        $("#hours").textContent = S.hours ? "Horário: " + S.hours : "";
         $("#map").href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(S.address || "");
-        $("#foot").textContent = `\xA9 ${(/* @__PURE__ */ new Date()).getFullYear()} ${S.store_name || "Dod\xF4 Esportes"}. ${S.address || ""}`;
+        $("#foot").textContent = `© ${(/* @__PURE__ */ new Date()).getFullYear()} ${S.store_name || "Dodô Esportes"}. ${S.address || ""}`;
         const h = () => {
           if (location.hash.startsWith("#p=")) open(location.hash.slice(3));
         };
@@ -382,6 +385,29 @@
         if (r.matches(":hover") || r.scrollWidth <= r.clientWidth || b.bottom < 0 || b.top > innerHeight) return;
         r.scrollBy({ left: r.scrollLeft + r.clientWidth + 4 >= r.scrollWidth ? -r.scrollLeft : 290, behavior: "smooth" });
       }), 4500);
+
+      // Carrossel: itens mudam de tamanho, altura e imagem conforme passam pelo centro
+      if (!rm) {
+        const flow = (r) => {
+          const b = r.getBoundingClientRect(), c = b.left + b.width / 2;
+          r.querySelectorAll(".card").forEach((el) => {
+            const q = el.getBoundingClientRect();
+            const d = Math.max(-1.2, Math.min(1.2, (q.left + q.width / 2 - c) / (b.width / 2)));
+            el.style.setProperty("--s", 1 - 0.09 * Math.min(Math.abs(d), 1));
+            el.style.setProperty("--y", Math.abs(d) * 16 + "px");
+            el.style.setProperty("--px", -d * 26 + "px");
+          });
+        };
+        document.querySelectorAll(".row").forEach((r) => {
+          let t = false;
+          const run = () => { t = false; flow(r); };
+          const ask = () => { if (!t) { t = true; requestAnimationFrame(run); } };
+          r.addEventListener("scroll", ask, { passive: true });
+          new MutationObserver(ask).observe(r, { childList: true });
+          addEventListener("resize", ask);
+          run();
+        });
+      }
     </script>
   </body>
 </html>
