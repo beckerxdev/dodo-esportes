@@ -6,7 +6,7 @@
     <title>Dodô Esportes | Tênis e artigos esportivos em Três Pontas</title>
     <meta name="description" content="Tudo o que você precisa para a sua prática esportiva. Compre pelo WhatsApp.">
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/site.css">
   </head>
   <body>
     <div id="prog"></div>
@@ -22,7 +22,7 @@
           <a href="#catalogo" data-cat="acessorios">Acessórios</a>
           <a href="#catalogo" data-promo="1">Ofertas</a>
         </nav>
-        <input class="search" id="hs" type="search" placeholder="Buscar produto" aria-label="Buscar produto">
+        <input class="search" id="hs" type="search" placeholder="Buscar produtos" aria-label="Buscar produtos" enterkeyhint="search">
         <a class="wa" id="wa" href="#" aria-label="WhatsApp" target="_blank" rel="noopener">W</a>
       </div>
     </header>
@@ -64,10 +64,12 @@
       <div class="wrap">
         <h2 class="rv">Todos os produtos</h2>
         <div class="filters">
-          <input type="search" id="q" placeholder="Pesquisar" aria-label="Pesquisar">
+          <input type="search" id="q" placeholder="Pesquisar produtos" aria-label="Pesquisar produtos">
           <select id="fc" aria-label="Categoria"><option value="">Todas as categorias</option></select>
           <select id="fp" aria-label="Faixa de preço"><option value="">Qualquer preço</option><option value="150">Até R$ 150</option><option value="300">Até R$ 300</option><option value="600">Até R$ 600</option></select>
-          <label> <input type="checkbox" id="fs"> Só disponíveis</label><label> <input type="checkbox" id="fo"> Só ofertas</label>
+          <label class="chip"><input type="checkbox" id="fs"><span>Só disponíveis</span></label>
+          <label class="chip"><input type="checkbox" id="fo"><span>Só ofertas</span></label>
+          <button type="button" class="clear" id="fx">Limpar filtros</button>
         </div>
         <div class="grid" id="grid">
         </div>
@@ -394,6 +396,14 @@
           run();
         });
       }
+
+      // Limpar filtros
+      $("#fx").onclick = () => {
+        Object.assign(st, { cat: "", q: "", max: 0, only: false, promo: false });
+        ["#q", "#hs", "#fc", "#fp"].forEach((id) => { $(id).value = ""; });
+        ["#fs", "#fo"].forEach((id) => { $(id).checked = false; });
+        apply();
+      };
     </script>
   </body>
 </html>

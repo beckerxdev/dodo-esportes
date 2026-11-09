@@ -235,44 +235,6 @@ h2 {
   margin-bottom: 28px;
   text-transform: uppercase;
 }
-.cats {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 14px;
-}
-.cat {
-  aspect-ratio: 4/5;
-  border-radius: var(--r);
-  padding: 18px;
-  display: flex;
-  align-items: flex-end;
-  color: #fff;
-  text-decoration: none;
-  background-size: cover;
-  background-position: center;
-  position: relative;
-  overflow: hidden;
-  transition: transform .35s;
-}
-.cat::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(
-      0deg,
-      rgba(10, 22, 64, .85),
-      transparent 60%);
-}
-.cat:hover {
-  transform: translateY(-6px);
-}
-.cat span {
-  position: relative;
-  z-index: 1;
-  font: 800 28px/1 "Barlow Condensed";
-  text-transform: uppercase;
-}
 .filters {
   display: flex;
   flex-wrap: wrap;
@@ -618,3 +580,70 @@ dialog[open]::backdrop { animation: fade .3s; }
 .row .card:hover { scale: 1.06; translate: 0 -10px; }
 .row .card:hover .ph img { transform: translateX(var(--px, 0px)) scale(1.26); }
 @media (prefers-reduced-motion: reduce) { .row .card, .row .card:hover { scale: 1; translate: none; } }
+
+/* ===== AJUSTES PARA CELULAR ===== */
+html, body { overflow-x: clip; max-width: 100%; }
+.mq { transform: none; margin: 0; }
+
+/* Cabeçalho: busca grande no meio, WhatsApp no canto direito */
+.search {
+  flex: 0 1 300px; width: auto; min-width: 0; height: 46px;
+  font: inherit; font-size: 16px; /* 16px evita o zoom automático do iPhone */
+  padding: 0 16px 0 44px; border-radius: 99px; -webkit-appearance: none; appearance: none;
+  background: rgba(255, 255, 255, .14) url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round'><circle cx='8' cy='8' r='6'/><path d='M13 13l4 4'/></svg>") no-repeat 16px center;
+  transition: background-color .25s, box-shadow .25s;
+}
+.search:focus { background-color: rgba(255, 255, 255, .24); box-shadow: 0 0 0 2px var(--orange); outline: none; }
+.wa { margin-left: auto; }
+@media (max-width: 800px) {
+  .bar { gap: 10px; }
+  .logo { font-size: 26px; }
+  .search { flex: 1 1 auto; max-width: none; margin: 0; }
+  .wa { margin-left: 0; }
+}
+
+/* ===== FILTROS DO CATÁLOGO ===== */
+.filters {
+  display: grid; grid-template-columns: 2fr 1.2fr 1fr auto auto auto; gap: 12px; align-items: center;
+  padding: 16px; margin-bottom: 28px; background: #fff; border-radius: 20px;
+  box-shadow: 0 1px 0 #dfe4f4, 0 18px 40px -26px rgba(10, 22, 64, .4);
+}
+.filters select, .filters input[type=search] {
+  width: 100%; height: 48px; padding: 0 16px; font: inherit; font-size: 16px; color: var(--ink);
+  background-color: var(--paper); border: 2px solid transparent; border-radius: 14px;
+  -webkit-appearance: none; appearance: none; transition: border-color .2s, background-color .2s;
+}
+.filters input[type=search] {
+  padding-left: 44px;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%231737d6' stroke-width='2.2' stroke-linecap='round'><circle cx='8' cy='8' r='6'/><path d='M13 13l4 4'/></svg>");
+  background-repeat: no-repeat; background-position: 16px center;
+}
+.filters select {
+  padding-right: 42px;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' fill='none' stroke='%231737d6' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M1 1.5l6 6 6-6'/></svg>");
+  background-repeat: no-repeat; background-position: right 16px center; cursor: pointer;
+}
+.filters select:focus, .filters input[type=search]:focus { border-color: var(--blue); background-color: #fff; outline: none; }
+.chip {
+  display: inline-flex; align-items: center; gap: 10px; height: 48px; padding: 0 18px; white-space: nowrap;
+  font-weight: 600; color: var(--mut); background: var(--paper); border: 2px solid transparent; border-radius: 99px;
+  cursor: pointer; user-select: none; transition: background-color .2s, border-color .2s, color .2s, transform .15s;
+}
+.chip:hover { transform: translateY(-2px); }
+.chip input {
+  -webkit-appearance: none; appearance: none; display: grid; place-items: center; flex: none;
+  width: 20px; height: 20px; margin: 0; background: #fff; border: 2px solid #aab4da; border-radius: 50%;
+  transition: background-color .2s, border-color .2s;
+}
+.chip input::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #fff; transform: scale(0); transition: transform .2s; }
+.chip input:checked { background: var(--blue); border-color: var(--blue); }
+.chip input:checked::after { transform: scale(1); }
+.chip:has(input:checked) { color: var(--blue); background: #eaefff; border-color: var(--blue); }
+.chip:has(input:focus-visible) { outline: 3px solid var(--orange); outline-offset: 2px; }
+.clear { height: 48px; padding: 0 12px; font-weight: 600; color: var(--blue); background: none; border: 0; text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 800px) {
+  .filters { grid-template-columns: 1fr 1fr; padding: 14px; border-radius: 18px; }
+  .filters input[type=search], .filters select#fc { grid-column: 1 / -1; }
+  .chip { justify-content: center; padding: 0 12px; }
+  .clear { grid-column: 1 / -1; height: 40px; }
+}
