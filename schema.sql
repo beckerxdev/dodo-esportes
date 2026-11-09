@@ -135,4 +135,4 @@ insert into categories(name,slug,sort) values
   ('Equipamentos de treinamento','treinamento',10),
   ('Outros esportes','outros',11);
 insert into store_settings(key,value) values('store_name','Dodô Esportes'),('whatsapp',''),('instagram','https://www.instagram.com/dodoesportestp/'),
-('address','Pç. Cônego Vitor, 82 – Centro, Três Pontas – MG, 37190-000'),('hours',''),('show_qty','false');
+('address','Pç. Cônego Vitor, 82 – Centro, Três Pontas – MG, 37190-000'),('phone','3532652905'),('show_qty','false');

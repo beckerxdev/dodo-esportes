@@ -6,7 +6,7 @@
     <title>Dodô Esportes | Tênis e artigos esportivos em Três Pontas</title>
     <meta name="description" content="Tudo o que você precisa para a sua prática esportiva. Compre pelo WhatsApp.">
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/site.css">
   </head>
   <body>
     <div id="prog"></div>
@@ -102,11 +102,17 @@
           <p style="margin-bottom:18px">Novidades e lançamentos todos os dias.</p>
           <a class="btn" id="ig" target="_blank" rel="noopener" href="#">Seguir a loja</a>
         </div>
-        <div class="rv">
+        <div class="rv loc">
           <h2>Onde estamos</h2>
           <p id="addr"></p>
-          <p id="hours" style="margin:10px 0 18px"></p>
-          <a class="btn" id="map" target="_blank" rel="noopener" href="#">Abrir no mapa</a>
+          <div class="hrs">
+            <div class="hrs-h"><b>Horário de funcionamento</b><span class="open" id="open"></span></div>
+            <ul id="hours"></ul>
+          </div>
+          <div class="actions">
+            <a class="btn" id="call" href="#">Ligar</a>
+            <a class="btn dark" id="route" target="_blank" rel="noopener" href="#">Como chegar</a>
+          </div>
         </div>
       </div>
     </section>
@@ -299,10 +305,7 @@
           alert("WhatsApp ainda não configurado.");
         };
         $("#ig").href = S.instagram || "#";
-        $("#addr").textContent = S.address || "";
-        $("#hours").textContent = S.hours ? "Horário: " + S.hours : "";
-        $("#map").href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(S.address || "");
-        $("#foot").textContent = `© ${(/* @__PURE__ */ new Date()).getFullYear()} ${S.store_name || "Dodô Esportes"}. ${S.address || ""}`;
+        renderLoja();
         const h = () => {
           if (location.hash.startsWith("#p=")) open(location.hash.slice(3));
         };
@@ -404,6 +407,40 @@
         ["#fs", "#fo"].forEach((id) => { $(id).checked = false; });
         apply();
       };
+
+      // ===== Informações da loja (endereço, telefone e horários) =====
+      const LOJA = {
+        endereco: "Praça Cônego Vitor, 82 – Centro, Três Pontas – MG, 37190-000",
+        telefone: "3532652905",
+        horarios: [
+          ["Segunda-feira", "9:00 – 18:30", 540, 1110],
+          ["Terça-feira", "9:00 – 18:30", 540, 1110],
+          ["Quarta-feira", "9:00 – 18:30", 540, 1110],
+          ["Quinta-feira", "9:00 – 18:30", 540, 1110],
+          ["Sexta-feira", "9:00 – 18:30", 540, 1110],
+          ["Sábado", "9:00 – 13:00", 540, 780]
+        ]
+      };
+      const fmtTel = (t) => t.length === 11 ? `(${t.slice(0, 2)}) ${t.slice(2, 7)}-${t.slice(7)}` : `(${t.slice(0, 2)}) ${t.slice(2, 6)}-${t.slice(6)}`;
+      function agora() {
+        const p = Object.fromEntries(new Intl.DateTimeFormat("en-US", { timeZone: "America/Sao_Paulo", weekday: "short", hour: "numeric", minute: "numeric", hourCycle: "h23" }).formatToParts(new Date()).map((x) => [x.type, x.value]));
+        return { dia: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(p.weekday), min: +p.hour * 60 + +p.minute };
+      }
+      function renderLoja() {
+        const end = S.address || LOJA.endereco, tel = (S.phone || LOJA.telefone).replace(/\D/g, "");
+        $("#addr").textContent = end;
+        const { dia, min } = agora();
+        $("#hours").innerHTML = LOJA.horarios.map((h, i) => `<li class="${i === dia ? "today" : ""}"><span>${h[0]}</span><span>${h[1]}</span></li>`).join("");
+        const h = LOJA.horarios[dia], aberto = h && min >= h[2] && min < h[3];
+        $("#open").textContent = aberto ? "Aberto agora" : "Fechado agora";
+        $("#open").classList.toggle("off", !aberto);
+        $("#call").href = "tel:+55" + tel;
+        $("#call").textContent = "Ligar " + fmtTel(tel);
+        $("#route").href = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(end);
+        $("#foot").textContent = `© ${new Date().getFullYear()} ${S.store_name || "Dodô Esportes"} · ${end} · ${fmtTel(tel)}`;
+      }
+      renderLoja();
+      setInterval(renderLoja, 60000);
     </script>
   </body>
 </html>

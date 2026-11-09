@@ -744,12 +744,13 @@
         };
       }
       function cfg() {
-        const F = [["store_name", "Nome da loja"], ["whatsapp", "WhatsApp (com DDD, só números, ex.: 5535999999999)"], ["instagram", "Link do Instagram"], ["address", "Endereço"], ["hours", "Horário de funcionamento"], ["show_qty", "Mostrar quantidade ao cliente (true/false)"]];
+        const F = [["store_name", "Nome da loja"], ["whatsapp", "WhatsApp (com DDD, só números, ex.: 5535999999999)"], ["instagram", "Link do Instagram"], ["address", "Endereço"], ["phone", "Telefone da loja (com DDD, só números, ex.: 3532652905)"], ["show_qty", "Mostrar quantidade ao cliente (true/false)"]];
         V.innerHTML = `<h1>Configurações</h1><form class="panel" id="cg">${F.map((f) => `<label>${f[1]}</label><input name="${f[0]}" maxlength="500" value="${esc(D.set[f[0]])}">`).join("")}<button class="btn" style="margin-top:16px">Salvar</button></form>`;
         $("#cg").onsubmit = async (e) => {
           e.preventDefault();
           const d = Object.fromEntries(new FormData(e.target));
           if (d.whatsapp && !/^\d{12,13}$/.test(d.whatsapp)) return toast("WhatsApp: use só números com 55 + DDD + número.", false);
+          if (d.phone && !/^\d{10,11}$/.test(d.phone)) return toast("Telefone: use só números com DDD.", false);
           if (d.instagram && !/^https:\/\//.test(d.instagram)) return toast("O link do Instagram deve começar com https://", false);
           const { error } = await sb.from("store_settings").upsert(Object.entries(d).map(([key, value]) => ({ key, value })));
           error ? toast("Erro ao salvar.", false) : (toast("Configurações salvas."), load());
