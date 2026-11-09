@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Dodô Esportes | Tênis e artigos esportivos em Três Pontas</title>
+    <meta name="description" content="Tudo o que você precisa para a sua prática esportiva. Compre pelo WhatsApp.">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site.css">
+  </head>
+  <body>
+    <div id="prog"></div>
+    <header>
+      <div class="wrap bar">
+        <a class="logo" href="#" id="logo">DODÔ<i>.</i></a>
+        <nav id="nav">
+          <a href="#catalogo" data-cat="">Todos os produtos</a>
+          <a href="#catalogo" data-cat="futebol">Futebol</a>
+          <a href="#catalogo" data-cat="academia">Academia</a>
+          <a href="#catalogo" data-cat="tenis-calcados">Calçados</a>
+          <a href="#catalogo" data-cat="roupas">Roupas</a>
+          <a href="#catalogo" data-cat="acessorios">Acessórios</a>
+          <a href="#catalogo" data-promo="1">Ofertas</a>
+        </nav>
+        <input class="search" id="hs" type="search" placeholder="Buscar produto" aria-label="Buscar produto">
+        <a class="wa" id="wa" href="#" aria-label="WhatsApp" target="_blank" rel="noopener">W</a>
+      </div>
+    </header>
+    <div class="hero" id="hero">
+      <div class="slide on" data-word="SPORT" style="background-image:url(assets/hero-1.jpg)">
+        <div class="wrap">
+          <h1>Supere seus limites.</h1>
+          <p>Tênis e artigos esportivos para cada modalidade.</p>
+          <a class="btn" href="#catalogo">Ver produtos</a>
+          <a class="btn ghost" href="#categorias">Categorias</a>
+        </div>
+      </div>
+      <div class="slide" data-word="ESTILO" style="background-image:url(assets/hero-2.jpg)">
+        <div class="wrap">
+          <h1>Seu esporte. Seu estilo.</h1>
+          <p>Sua Dodô Esportes, no centro de Três Pontas.</p>
+          <a class="btn" href="#catalogo">Ver produtos</a>
+        </div>
+      </div>
+      <div class="slide" data-word="RITMO" style="background-image:url(assets/hero-3.jpg)">
+        <div class="wrap">
+          <h1>Tudo para acompanhar seu ritmo.</h1>
+          <p>Escolha o produto e finalize o atendimento pelo WhatsApp.</p>
+          <a class="btn" href="#ofertas">Ver ofertas</a>
+        </div>
+      </div>
+      <div class="dots" id="dots">
+      </div>
+    </div>
+    <div class="mq" id="mq" aria-hidden="true"></div>
+    <section id="categorias">
+      <div class="wrap">
+        <h2 class="rv">Escolha seu esporte</h2>
+        <div class="cats" id="cats">
+        </div>
+      </div>
+    </section>
+    <section class="alt" id="destaques">
+      <div class="wrap">
+        <h2 class="rv">Em destaque</h2>
+        <div class="row" id="r-feat">
+        </div>
+      </div>
+    </section>
+    <section id="catalogo">
+      <div class="wrap">
+        <h2 class="rv">Todos os produtos</h2>
+        <div class="filters">
+          <input type="search" id="q" placeholder="Pesquisar" aria-label="Pesquisar">
+          <select id="fc" aria-label="Categoria"><option value="">Todas as categorias</option></select>
+          <select id="fp" aria-label="Faixa de preço"><option value="">Qualquer preço</option><option value="150">Até R$ 150</option><option value="300">Até R$ 300</option><option value="600">Até R$ 600</option></select>
+          <label> <input type="checkbox" id="fs"> Só disponíveis</label><label> <input type="checkbox" id="fo"> Só ofertas</label>
+        </div>
+        <div class="grid" id="grid">
+        </div>
+      </div>
+    </section>
+    <section class="alt" id="lancamentos">
+      <div class="wrap">
+        <h2 class="rv">Lançamentos</h2>
+        <div class="row" id="r-new">
+        </div>
+      </div>
+    </section>
+    <section id="ofertas">
+      <div class="wrap">
+        <h2 class="rv">Ofertas especiais</h2>
+        <div class="row" id="r-off">
+        </div>
+      </div>
+    </section>
+    <section class="about">
+      <div class="wrap">
+        <h2 class="rv">Tudo para a sua prática esportiva</h2>
+        <p class="rv">Tênis e artigos esportivos para quem treina, joga e compete. Atendimento direto pelo WhatsApp.</p>
+      </div>
+    </section>
+    <section>
+      <div class="wrap two">
+        <div class="rv">
+          <h2>Instagram</h2>
+          <p style="margin-bottom:18px">Novidades e lançamentos todos os dias.</p>
+          <a class="btn" id="ig" target="_blank" rel="noopener" href="#">Seguir a loja</a>
+        </div>
+        <div class="rv">
+          <h2>Onde estamos</h2>
+          <p id="addr"></p>
+          <p id="hours" style="margin:10px 0 18px"></p>
+          <a class="btn" id="map" target="_blank" rel="noopener" href="#">Abrir no mapa</a>
+        </div>
+      </div>
+    </section>
+    <footer>
+      <div class="wrap" id="foot">
+      </div>
+    </footer>
+    <dialog id="dlg">
+    </dialog>
+    <script type="module">
+      import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm";
+      import { CFG } from "./config.js";
+      const $ = (s) => document.querySelector(s), esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+      const brl = (n) => Number(n).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+      let sb, prods = [], cats = [], S = {}, st = { cat: "", q: "", max: 0, only: false, promo: false };
+      const rm = matchMedia("(prefers-reduced-motion:reduce)").matches;
+      const url = (p) => sb.storage.from("product-images").getPublicUrl(p).data.publicUrl;
+      const stock = (p) => p.variants.reduce((a, v) => a + v.qty, 0), promo = (p) => p.promo_price && +p.promo_price < +p.price, eff = (p) => promo(p) ? +p.promo_price : +p.price;
+      const imgs = (p) => [...p.product_images].sort((a, b) => a.sort - b.sort).map((i) => url(i.path));
+      const priceH = (p) => promo(p) ? `<s>${brl(p.price)}</s><b>${brl(p.promo_price)}</b>` : `<b>${brl(p.price)}</b>`;
+      const card = (p) => {
+        const i = imgs(p)[0], t = stock(p) <= 0 ? '<span class="tag o">Esgotado</span>' : promo(p) ? '<span class="tag">Promo\xE7\xE3o</span>' : p.is_new ? '<span class="tag n">Lan\xE7amento</span>' : "";
+        return `<article class="card rv" data-id="${p.id}" tabindex="0" role="button" aria-label="${esc(p.name)}">${t}<div class="ph">${i ? `<img loading="lazy" src="${esc(i)}" alt="${esc(p.name)}">` : `<b>${esc(p.name[0])}</b>`}</div><div class="info"><small>${esc(p.brand || p.categories?.name || "")}</small><h3>${esc(p.name)}</h3>${priceH(p)}</div></article>`;
+      };
+      const fill = (id, l) => {
+        $(id).innerHTML = l.length ? l.map(card).join("") : '<p class="empty">Nenhum produto por aqui ainda.</p>';
+        obs();
+      };
+      function apply() {
+        const l = prods.filter((p) => (!st.cat || p.categories?.slug === st.cat) && (!st.q || (p.name + " " + (p.brand || "")).toLowerCase().includes(st.q)) && (!st.max || eff(p) <= st.max) && (!st.only || stock(p) > 0) && (!st.promo || promo(p)));
+        $("#grid").innerHTML = l.length ? l.map(card).join("") : '<p class="empty">Nenhum produto encontrado. Tente limpar os filtros.</p>';
+        obs();
+      }
+      function obs() {
+        const o = new IntersectionObserver((e) => e.forEach((x) => {
+          if (x.isIntersecting) {
+            x.target.classList.add("in");
+            o.unobserve(x.target);
+          }
+        }), { threshold: 0.1 });
+        document.querySelectorAll(".rv:not(.in)").forEach((el) => rm ? el.classList.add("in") : o.observe(el));
+      }
+      function wa(msg) {
+        const n = (S.whatsapp || "").replace(/\D/g, "");
+        if (!n) return "";
+        return `https://wa.me/${n}${msg ? "?text=" + encodeURIComponent(msg) : ""}`;
+      }
+      function open(id) {
+        const p = prods.find((x) => x.id === id);
+        if (!p) return;
+        const im = imgs(p), vs = p.variants;
+        let sel = { s: null, c: null };
+        const f = vs.find((v) => v.qty > 0) || vs[0];
+        if (f) sel = { s: f.size, c: f.color };
+        const d = $("#dlg"), ds = (a) => [...new Set(a)];
+        const draw = () => {
+          const sizes = ds(vs.map((v2) => v2.size)), cols = ds(vs.map((v2) => v2.color)), v = vs.find((x) => x.size === sel.s && x.color === sel.c), q = v ? v.qty : 0;
+          const link = location.origin + location.pathname + "#p=" + p.id;
+          const msg = `Ol\xE1! Tenho interesse neste produto:
+      *${p.name}*
+      Pre\xE7o: ${brl(eff(p))}
+      Tamanho: ${sel.s || "-"}
+      Cor: ${sel.c || "-"}
+      ${link}`;
+          const href = wa(msg);
+          d.innerHTML = `<button class="x" aria-label="Fechar">\xD7</button><div class="pd"><div class="gal"><div class="ph" id="main">${im[0] ? `<img src="${esc(im[0])}" alt="${esc(p.name)}">` : `<b>${esc(p.name[0])}</b>`}</div><div class="th">${im.map((u, i) => `<img src="${esc(u)}" alt="" data-i="${i}" class="${i ? "" : "on"}">`).join("")}</div></div>
+      <div class="det"><small>${esc(p.brand || "")}</small><h2>${esc(p.name)}</h2><div style="font-size:22px">${priceH(p)}</div><p style="margin:14px 0;color:var(--mut);white-space:pre-line">${esc(p.description || "")}</p>
+      <b>Tamanho</b><div class="opts">${sizes.map((s) => `<button class="opt ${s === sel.s ? "on" : ""}" data-s="${esc(s)}" ${vs.some((x) => x.size === s && x.qty > 0) ? "" : "disabled"}>${esc(s)}</button>`).join("")}</div>
+      <b>Cor</b><div class="opts">${cols.map((c) => `<button class="opt ${c === sel.c ? "on" : ""}" data-c="${esc(c)}" ${vs.some((x) => x.color === c && x.size === sel.s && x.qty > 0) ? "" : "disabled"}>${esc(c)}</button>`).join("")}</div>
+      <p>${q > 0 ? `<span class="ok">Dispon\xEDvel${S.show_qty === "true" ? ` (${q} un.)` : ""}</span>` : '<span class="no">Indispon\xEDvel nesta varia\xE7\xE3o</span>'}</p>
+      <a class="buy" ${href && q > 0 ? `href="${href}" target="_blank" rel="noopener"` : 'href="#" aria-disabled="true"'} id="buy">ADQUIRIR PELO WHATSAPP</a></div></div>`;
+        };
+        draw();
+        if (!d.open) d.showModal();
+        d.onclick = (e) => {
+          const t = e.target;
+          if (t === d || t.classList.contains("x")) {
+            d.close();
+            return;
+          }
+          if (t.dataset.s) {
+            sel.s = t.dataset.s;
+            if (!vs.some((x) => x.size === sel.s && x.color === sel.c && x.qty > 0)) sel.c = (vs.find((x) => x.size === sel.s && x.qty > 0) || {}).color;
+            draw();
+          } else if (t.dataset.c) {
+            sel.c = t.dataset.c;
+            draw();
+          } else if (t.dataset.i) {
+            $("#main").innerHTML = `<img src="${esc(im[+t.dataset.i])}" alt="">`;
+            d.querySelectorAll(".th img").forEach((x) => x.classList.toggle("on", x === t));
+          } else if (t.id === "buy" && !t.getAttribute("href").startsWith("http")) {
+            e.preventDefault();
+            alert(wa("") ? "Selecione uma varia\xE7\xE3o dispon\xEDvel." : "O WhatsApp da loja ainda n\xE3o foi configurado.");
+          }
+        };
+        d.onclose = () => {
+          if (location.hash.startsWith("#p=")) history.replaceState(null, "", location.pathname);
+        };
+      }
+      document.addEventListener("click", (e) => {
+        const c = e.target.closest(".card");
+        if (c) {
+          history.replaceState(null, "", "#p=" + c.dataset.id);
+          open(c.dataset.id);
+        }
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && e.target.classList?.contains("card")) e.target.click();
+      });
+      $("#nav").onclick = (e) => {
+        const a = e.target.closest("a");
+        if (!a) return;
+        st.cat = a.dataset.cat || "";
+        st.promo = !!a.dataset.promo;
+        $("#fc").value = st.cat;
+        $("#fo").checked = st.promo;
+        apply();
+      };
+      $("#hs").onkeydown = (e) => {
+        if (e.key === "Enter") {
+          $("#q").value = st.q = e.target.value.toLowerCase();
+          apply();
+          location.hash = "catalogo";
+        }
+      };
+      $("#q").oninput = (e) => {
+        st.q = e.target.value.toLowerCase();
+        apply();
+      };
+      $("#fc").onchange = (e) => {
+        st.cat = e.target.value;
+        apply();
+      };
+      $("#fp").onchange = (e) => {
+        st.max = +e.target.value;
+        apply();
+      };
+      $("#fs").onchange = (e) => {
+        st.only = e.target.checked;
+        apply();
+      };
+      $("#fo").onchange = (e) => {
+        st.promo = e.target.checked;
+        apply();
+      };
+      const sl = [...document.querySelectorAll(".slide")];
+      let cur = 0, tm;
+      $("#dots").innerHTML = sl.map((_, i) => `<button aria-label="Banner ${i + 1}" class="${i ? "" : "on"}"></button>`).join("");
+      const go = (i) => {
+        cur = i;
+        sl.forEach((s, k) => s.classList.toggle("on", k === i));
+        document.querySelectorAll("#dots button").forEach((b, k) => b.classList.toggle("on", k === i));
+      };
+      $("#dots").onclick = (e) => {
+        const k = [...$("#dots").children].indexOf(e.target);
+        if (k >= 0) {
+          go(k);
+          clearInterval(tm);
+        }
+      };
+      if (!rm) tm = setInterval(() => go((cur + 1) % sl.length), 6500);
+      async function init() {
+        if (!CFG.SUPABASE_URL || !CFG.SUPABASE_ANON_KEY) {
+          $("#grid").innerHTML = '<p class="empty">Configure o Supabase em config.js (veja o README).</p>';
+          return;
+        }
+        sb = createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
+        const [c, p, s] = await Promise.all([sb.from("categories").select("*").order("sort"), sb.from("products").select("*,categories(name,slug),product_images(path,sort),variants(size,color,qty)").eq("active", true).order("created_at", { ascending: false }), sb.from("store_settings").select("*")]);
+        if (c.error || p.error) {
+          $("#grid").innerHTML = '<p class="empty">N\xE3o foi poss\xEDvel carregar os produtos agora. Tente novamente em instantes.</p>';
+          return;
+        }
+        cats = c.data;
+        prods = p.data;
+        (s.data || []).forEach((x) => S[x.key] = x.value);
+        $("#cats").innerHTML = cats.map((k) => `<a class="cat rv" href="#catalogo" data-slug="${esc(k.slug)}" style="background-image:url(assets/categorias/${esc(k.slug)}.jpg),linear-gradient(150deg,var(--blue),var(--navy))"><span>${esc(k.name)}</span></a>`).join("");
+        $("#cats").onclick = (e) => {
+          const a = e.target.closest(".cat");
+          if (a) {
+            st.cat = a.dataset.slug;
+            $("#fc").value = st.cat;
+            apply();
+          }
+        };
+        $("#fc").innerHTML += cats.map((k) => `<option value="${esc(k.slug)}">${esc(k.name)}</option>`).join("");
+        fill("#r-feat", prods.filter((p2) => p2.featured));
+        fill("#r-new", prods.filter((p2) => p2.is_new));
+        fill("#r-off", prods.filter(promo));
+        apply();
+        const w = wa("Ol\xE1! Vim pelo site e gostaria de atendimento.");
+        $("#wa").href = w || "#";
+        if (!w) $("#wa").onclick = (e) => {
+          e.preventDefault();
+          alert("WhatsApp ainda n\xE3o configurado.");
+        };
+        $("#ig").href = S.instagram || "#";
+        $("#addr").textContent = S.address || "";
+        $("#hours").textContent = S.hours ? "Hor\xE1rio: " + S.hours : "";
+        $("#map").href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(S.address || "");
+        $("#foot").textContent = `\xA9 ${(/* @__PURE__ */ new Date()).getFullYear()} ${S.store_name || "Dod\xF4 Esportes"}. ${S.address || ""}`;
+        const h = () => {
+          if (location.hash.startsWith("#p=")) open(location.hash.slice(3));
+        };
+        h();
+        addEventListener("hashchange", h);
+      }
+      obs();
+      init();
+
+
+      // ===== ANIMAÇÕES =====
+      document.querySelectorAll(".slide h1").forEach((h) => {
+        h.innerHTML = h.textContent.split(" ").map((w, i) => `<span class="w"><span style="--i:${i}">${w}</span></span>`).join(" ");
+      });
+      const mqWords = ["Futebol", "Academia", "Corrida", "Basquete", "Vôlei", "Lutas", "Calçados", "Roupas", "Acessórios"];
+      const mqSeq = mqWords.map((w) => `<span>${w}</span>`).join("");
+      $("#mq").innerHTML = `<div class="mq-t">${mqSeq}${mqSeq}${mqSeq}${mqSeq}</div>`;
+
+      // Escalonamento dos itens que aparecem
+      document.querySelectorAll(".grid, .row, .cats").forEach((c) =>
+        new MutationObserver(() => [...c.children].forEach((el, i) => el.style.setProperty("--d", Math.min(i, 8) * 70 + "ms"))).observe(c, { childList: true })
+      );
+
+      // Barra de progresso, cabeçalho compacto e paralaxe
+      const pr = $("#prog"), hd = document.querySelector("header"), ab = document.querySelector(".about");
+      let tick = false;
+      const onScroll = () => {
+        tick = false;
+        const y = scrollY, max = document.documentElement.scrollHeight - innerHeight;
+        pr.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
+        hd.classList.toggle("sm", y > 40);
+        if (!rm) {
+          $("#hero").style.setProperty("--py", y * 0.22 + "px");
+          ab.style.setProperty("--ay", ab.getBoundingClientRect().top * -0.12 + "px");
+        }
+      };
+      addEventListener("scroll", () => { if (!tick) { tick = true; requestAnimationFrame(onScroll); } }, { passive: true });
+      onScroll();
+
+      // Cards com inclinação 3D acompanhando o mouse
+      if (!rm) {
+        document.addEventListener("pointermove", (e) => {
+          const c = e.target.closest && e.target.closest(".card");
+          if (!c || e.pointerType !== "mouse") return;
+          const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+          c.style.transform = `perspective(700px) rotateX(${-y * 7}deg) rotateY(${x * 7}deg) translateY(-6px)`;
+        });
+        document.addEventListener("pointerout", (e) => {
+          const c = e.target.closest && e.target.closest(".card");
+          if (c && !c.contains(e.relatedTarget)) c.style.transform = "";
+        });
+      }
+
+      // Carrosséis: setas e avanço automático suave
+      document.querySelectorAll(".row").forEach((r) => {
+        const w = document.createElement("div");
+        w.className = "car";
+        r.before(w);
+        w.append(r);
+        w.insertAdjacentHTML("beforeend", '<button class="ar l" aria-label="Anterior">‹</button><button class="ar r" aria-label="Próximo">›</button>');
+        w.onclick = (e) => {
+          const b = e.target.closest(".ar");
+          if (b) r.scrollBy({ left: (b.classList.contains("r") ? 1 : -1) * 300, behavior: "smooth" });
+        };
+      });
+      if (!rm) setInterval(() => document.querySelectorAll(".row").forEach((r) => {
+        const b = r.getBoundingClientRect();
+        if (r.matches(":hover") || r.scrollWidth <= r.clientWidth || b.bottom < 0 || b.top > innerHeight) return;
+        r.scrollBy({ left: r.scrollLeft + r.clientWidth + 4 >= r.scrollWidth ? -r.scrollLeft : 290, behavior: "smooth" });
+      }), 4500);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+    <title>Painel | Dodô Esportes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --navy: #0a1640;
+        --blue: #2a52e8;
+        --bg: #eef1f7;
+        --line: #dde2f0;
+        --mut: #5d6684;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      body {
+        font: 15px/1.5 Barlow, sans-serif;
+        background: var(--bg);
+        color: #101528;
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: "Barlow Condensed";
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+      :focus-visible {
+        outline: 3px solid var(--blue);
+        outline-offset: 2px;
+      }
+      header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: var(--navy);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 0 16px;
+        z-index: 40;
+      }
+      header h3 {
+        font-size: 24px;
+        flex: 1;
+      }
+      header span {
+        font-size: 13px;
+        opacity: .8;
+      }
+      .ib {
+        background: none;
+        border: 0;
+        color: #fff;
+        font-size: 24px;
+        padding: 6px 10px;
+        border-radius: 8px;
+        position: relative;
+      }
+      .ib:hover {
+        background: rgba(255, 255, 255, .12);
+      }
+      .bd {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: #ff6a1a;
+        font-size: 11px;
+        border-radius: 99px;
+        padding: 0 6px;
+      }
+      aside {
+        position: fixed;
+        top: 60px;
+        bottom: 0;
+        left: 0;
+        width: 250px;
+        background: #fff;
+        border-right: 1px solid var(--line);
+        transform: translateX(-100%);
+        transition: transform .3s;
+        z-index: 35;
+        padding: 14px;
+      }
+      aside.open {
+        transform: none;
+      }
+      aside button {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 12px 14px;
+        border: 0;
+        background: none;
+        border-radius: 10px;
+        font-weight: 600;
+      }
+      aside button:hover,
+      aside button.on {
+        background: #e7ecff;
+        color: var(--blue);
+      }
+      #ov {
+        position: fixed;
+        inset: 60px 0 0;
+        background: rgba(10, 22, 64, .4);
+        z-index: 30;
+        display: none;
+      }
+      #ov.show {
+        display: block;
+      }
+      main {
+        padding: 84px 20px 40px;
+        max-width: 1150px;
+        margin: auto;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 14px;
+        margin: 16px 0;
+      }
+      .k {
+        background: #fff;
+        border-radius: 14px;
+        padding: 16px;
+        border: 1px solid var(--line);
+      }
+      .k b {
+        font: 800 38px "Barlow Condensed";
+        color: var(--blue);
+        display: block;
+      }
+      .panel {
+        background: #fff;
+        border-radius: 14px;
+        padding: 18px;
+        border: 1px solid var(--line);
+        margin-bottom: 16px;
+        overflow-x: auto;
+      }
+      .two {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 6px 0;
+      }
+      .bar i {
+        display: block;
+        height: 14px;
+        background: var(--blue);
+        border-radius: 7px;
+        transition: width .6s;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      td,
+      th {
+        padding: 9px 8px;
+        text-align: left;
+        border-bottom: 1px solid var(--line);
+        vertical-align: middle;
+      }
+      th {
+        font-size: 12px;
+        color: var(--mut);
+      }
+      .btn {
+        background: var(--blue);
+        color: #fff;
+        border: 0;
+        border-radius: 10px;
+        padding: 10px 18px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .btn.s {
+        background: #e7ecff;
+        color: var(--blue);
+      }
+      .btn.d {
+        background: #fde8e6;
+        color: #c0392b;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #cdd4ea;
+        border-radius: 10px;
+        background: #fff;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+        margin: 10px 0 4px;
+      }
+      .g {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 16px;
+      }
+      .st {
+        padding: 3px 10px;
+        border-radius: 99px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .st.ok {
+        background: #dcf5e5;
+        color: #0a7a35;
+      }
+      .st.lo {
+        background: #fff1d6;
+        color: #9a6200;
+      }
+      .st.no {
+        background: #fde8e6;
+        color: #c0392b;
+      }
+      .st.off {
+        background: #e5e8f2;
+        color: #555;
+      }
+      .vr {
+        display: grid;
+        grid-template-columns: 1fr 1fr 90px 40px;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .imgs {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 8px 0;
+      }
+      .imgs div {
+        position: relative;
+      }
+      .imgs img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+      .imgs .rmv {
+        opacity: .3;
+      }
+      #toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 12px 18px;
+        border-radius: 10px;
+        color: #fff;
+        z-index: 99;
+        display: none;
+      }
+      #login {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: var(--navy);
+      }
+      #login form {
+        background: #fff;
+        padding: 30px;
+        border-radius: 16px;
+        width: min(380px, 92vw);
+      }
+      dialog {
+        border: 0;
+        border-radius: 14px;
+        padding: 22px;
+        max-width: 380px;
+      }
+      dialog::backdrop {
+        background: rgba(10, 22, 64, .5);
+      }
+      @media (max-width: 760px) {
+        .two,
+        .g {
+          grid-template-columns: 1fr;
+        }
+        .vr {
+          grid-template-columns: 1fr 1fr 70px 36px;
+        }
+        header span {
+          display: none;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+      }
+
+    
+      #view > * { animation: in .45s both; }
+      .cards .k:nth-child(2) { animation-delay: .06s; } .cards .k:nth-child(3) { animation-delay: .12s; }
+      .cards .k:nth-child(4) { animation-delay: .18s; } .cards .k:nth-child(5) { animation-delay: .24s; } .cards .k:nth-child(6) { animation-delay: .3s; }
+      .k, .panel { transition: transform .25s, box-shadow .25s; }
+      .k:hover, .panel:hover { transform: translateY(-3px); box-shadow: 0 14px 30px -16px rgba(10, 22, 64, .35); }
+      @keyframes in { from { opacity: 0; translate: 0 14px; } }
+      @media (prefers-reduced-motion: reduce) { #view > *, .k { animation: none !important; } }
+    </style>
+  </head>
+  <body>
+    <div id="login">
+      <form id="lf">
+        <h1 style="font-size:36px;color:var(--navy)">Painel Dodô Esportes</h1>
+        <p id="lmsg" style="color:var(--mut)">Acesso restrito à equipe da loja.</p>
+        <label for="em">E-mail</label> <input id="em" type="email" autocomplete="username" required><label for="pw" id="pwl">Senha</label> <input id="pw" type="password" autocomplete="current-password" required minlength="8">
+        <button class="btn" style="width:100%;margin-top:16px">Entrar</button>
+        <button type="button" id="fg" class="btn s" style="width:100%;margin-top:8px">Esqueci minha senha</button>
+      </form>
+    </div>
+    <div id="app" hidden>
+      <header>
+        <button class="ib" id="burger" aria-label="Menu" aria-expanded="false">☰</button>
+        <h3>Dodô Esportes</h3>
+        <button class="ib" id="bell" aria-label="Alertas de estoque">🔔<span class="bd" id="bn"></span></button><span id="who"></span>
+        <button class="btn s" id="out">Sair</button>
+      </header>
+      <aside id="side">
+      </aside>
+      <div id="ov">
+      </div>
+      <main id="view">
+      </main>
+    </div>
+    <dialog id="cf">
+      <p id="cft" style="margin-bottom:16px"></p>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn s" value="n">Cancelar</button>
+        <button class="btn d" value="y">Excluir</button>
+      </div>
+    </dialog>
+    <div id="toast" role="status">
+    </div>
+    <script type="module">
+      import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm";
+      import { CFG } from "./config.js";
+      const $ = (s) => document.querySelector(s), esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+      const brl = (n) => Number(n).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+      const toast = (m, ok = true) => {
+        const t = $("#toast");
+        t.textContent = m;
+        t.style.background = ok ? "#0a7a35" : "#c0392b";
+        t.style.display = "block";
+        setTimeout(() => t.style.display = "none", 3500);
+      };
+      const ask = (m) => new Promise((r) => {
+        $("#cft").textContent = m;
+        const d = $("#cf");
+        d.returnValue = "";
+        d.onclose = () => r(d.returnValue === "y");
+        d.showModal();
+      });
+      $("#cf").addEventListener("click", (e) => {
+        if (e.target.value) $("#cf").close(e.target.value);
+      });
+      if (!CFG.SUPABASE_URL) {
+        $("#lmsg").textContent = "Configure o Supabase em config.js (veja o README).";
+      }
+      const sb = createClient(CFG.SUPABASE_URL || "https://x.supabase.co", CFG.SUPABASE_ANON_KEY || "x");
+      let D = { cats: [], prods: [], set: {} }, tries = 0, lock = 0, user = null;
+      const tot = (p) => p.variants.reduce((a, v) => a + v.qty, 0);
+      const status = (p) => !p.active ? ["off", "Inativo"] : tot(p) <= 0 ? ["no", "Esgotado"] : tot(p) <= p.min_stock ? ["lo", "Estoque baixo"] : ["ok", "Dispon\xEDvel"];
+      const badge = (p) => {
+        const s = status(p);
+        return `<span class="st ${s[0]}">${s[1]}</span>`;
+      };
+      const MENU = [["dash", "Dashboard"], ["add", "Adicionar produtos"], ["list", "Gerenciar produtos"], ["cats", "Categorias"], ["promo", "Ofertas e promo\xE7\xF5es"], ["stock", "Controle de estoque"], ["cfg", "Configura\xE7\xF5es"]];
+      $("#side").innerHTML = MENU.map((m) => `<button data-v="${m[0]}">${m[1]}</button>`).join("") + '<button id="so">Sair da conta</button>';
+      const menu = (o) => {
+        $("#side").classList.toggle("open", o);
+        $("#ov").classList.toggle("show", o);
+        $("#burger").setAttribute("aria-expanded", o);
+      };
+      $("#burger").onclick = () => menu(!$("#side").classList.contains("open"));
+      $("#ov").onclick = () => menu(false);
+      $("#side").onclick = (e) => {
+        const b = e.target.closest("button");
+        if (!b) return;
+        if (b.id === "so") return logout();
+        show(b.dataset.v);
+        menu(false);
+      };
+      async function logout() {
+        await sb.auth.signOut();
+        location.reload();
+      }
+      $("#out").onclick = logout;
+      $("#lf").onsubmit = async (e) => {
+        e.preventDefault();
+        if (recovery) {
+          const { error: error2 } = await sb.auth.updateUser({ password: $("#pw").value });
+          if (error2) return toast("Senha inv\xE1lida ou link expirado.", false);
+          toast("Senha alterada.");
+          return enter();
+        }
+        if (Date.now() < lock) return toast("Muitas tentativas. Aguarde 1 minuto.", false);
+        const { error } = await sb.auth.signInWithPassword({ email: $("#em").value.trim(), password: $("#pw").value });
+        if (error) {
+          if (++tries >= 5) {
+            lock = Date.now() + 6e4;
+            tries = 0;
+          }
+          return toast("E-mail ou senha incorretos.", false);
+        }
+        tries = 0;
+        enter();
+      };
+      $("#fg").onclick = async () => {
+        const m = $("#em").value.trim();
+        if (!m) return toast("Digite seu e-mail.", false);
+        await sb.auth.resetPasswordForEmail(m, { redirectTo: location.origin + location.pathname });
+        toast("Se o e-mail estiver cadastrado, enviaremos o link.");
+      };
+      let recovery = false;
+      sb.auth.onAuthStateChange((ev) => {
+        if (ev === "PASSWORD_RECOVERY") {
+          recovery = true;
+          $("#lmsg").textContent = "Defina sua nova senha.";
+          $("#em").closest("form").querySelectorAll("#em,label[for=em],#fg").forEach((x) => x.style.display = "none");
+          $("#pwl").textContent = "Nova senha";
+          $("#pw").autocomplete = "new-password";
+        }
+      });
+      async function enter() {
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) return;
+        const { data } = await sb.from("admins").select("user_id").eq("user_id", session.user.id).maybeSingle();
+        if (!data) {
+          await sb.auth.signOut();
+          return toast("Esta conta n\xE3o tem permiss\xE3o de administrador.", false);
+        }
+        user = session.user;
+        $("#who").textContent = user.email;
+        $("#login").hidden = true;
+        $("#app").hidden = false;
+        await load();
+        show("dash");
+      }
+      async function load() {
+        const [c, p, s] = await Promise.all([sb.from("categories").select("*").order("sort"), sb.from("products").select("*,categories(name),product_images(id,path,sort),variants(id,size,color,qty)").order("created_at", { ascending: false }), sb.from("store_settings").select("*")]);
+        if (c.error || p.error) return toast("Erro ao carregar dados.", false);
+        D.cats = c.data;
+        D.prods = p.data;
+        D.set = {};
+        s.data.forEach((x) => D.set[x.key] = x.value);
+        const n = D.prods.filter((p2) => ["lo", "no"].includes(status(p2)[0])).length;
+        $("#bn").textContent = n || "";
+      }
+      const V = $("#view");
+      function show(v, arg) {
+        V.onclick = (e) => {
+          const g = e.target.closest("[data-go]");
+          if (g) show(g.dataset.go);
+        };
+        document.querySelectorAll("#side button").forEach((b) => b.classList.toggle("on", b.dataset.v === v));
+        ({ dash, add: () => form(), edit: () => form(arg), list, cats, promo, stock, cfg })[v]();
+        scrollTo(0, 0);
+      }
+      $("#bell").onclick = () => show("stock");
+      function dash() {
+        const P = D.prods, a = P.filter((p) => p.active), pr = P.filter((p) => p.promo_price), lo = P.filter((p) => status(p)[0] === "lo"), no = P.filter((p) => status(p)[0] === "no");
+        const k = [["Produtos", P.length], ["Categorias", D.cats.length], ["Ativos", a.length], ["Em promo\xE7\xE3o", pr.length], ["Estoque baixo", lo.length], ["Esgotados", no.length]];
+        const by = D.cats.map((c) => [c.name, P.filter((p) => p.category_id === c.id).length]), mx = Math.max(1, ...by.map((x) => x[1]));
+        V.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h1>Dashboard</h1><button class="btn" data-go="add">Adicionar produto</button></div>
+       <div class="cards">${k.map((x) => `<div class="k">${x[0]}<b>${x[1]}</b></div>`).join("")}</div>
+       <div class="two"><div class="panel"><h3>Produtos por categoria</h3>${by.map((x) => `<div class="bar"><span style="width:130px;font-size:13px">${esc(x[0])}</span><i style="width:${x[1] / mx * 60}%;min-width:4px"></i><b>${x[1]}</b></div>`).join("") || "<p>Nenhuma categoria.</p>"}</div>
+       <div class="panel"><h3>Alertas de estoque</h3>${[...no, ...lo].map((p) => `<p>${esc(p.name)} ${badge(p)} <small>(${tot(p)} un.)</small></p>`).join("") || "<p>Nenhum alerta.</p>"}</div></div>
+       <div class="panel"><h3>\xDAltimos cadastrados</h3>${P.slice(0, 5).map((p) => `<p>${esc(p.name)} \u2014 ${brl(p.price)} ${badge(p)}</p>`).join("") || "<p>Cadastre o primeiro produto para come\xE7ar.</p>"}</div>
+       <div class="panel"><h3>Acessos r\xE1pidos</h3><button class="btn s" data-go="list">Gerenciar produtos</button> <button class="btn s" data-go="stock">Estoque</button> <button class="btn s" data-go="promo">Promo\xE7\xF5es</button></div>`;
+      }
+      V.onclick = (e) => {
+        const g = e.target.closest("[data-go]");
+        if (g) show(g.dataset.go);
+      };
+      function list() {
+        V.innerHTML = `<h1>Gerenciar produtos</h1><div class="panel"><input id="ls" placeholder="Pesquisar produto" aria-label="Pesquisar"><table><thead><tr><th>Produto<th>Pre\xE7o<th>Estoque<th>Status<th></thead><tbody id="lb"></tbody></table></div>`;
+        const r = () => {
+          const q = $("#ls").value.toLowerCase();
+          $("#lb").innerHTML = D.prods.filter((p) => p.name.toLowerCase().includes(q)).map((p) => `<tr><td>${esc(p.name)}<td>${brl(p.price)}<td>${tot(p)}<td>${badge(p)}<td><button class="btn s" data-e="${p.id}">Editar</button> <button class="btn d" data-d="${p.id}">Excluir</button>`).join("") || "<tr><td colspan=5>Nenhum produto.</tr>";
+        };
+        r();
+        $("#ls").oninput = r;
+        $("#lb").onclick = async (e) => {
+          const b = e.target.closest("button");
+          if (!b) return;
+          if (b.dataset.e) return show("edit", b.dataset.e);
+          const p = D.prods.find((x) => x.id === b.dataset.d);
+          if (!await ask(`Excluir "${p.name}"? Esta a\xE7\xE3o n\xE3o pode ser desfeita.`)) return;
+          if (p.product_images.length) await sb.storage.from("product-images").remove(p.product_images.map((i) => i.path));
+          const { error } = await sb.from("products").delete().eq("id", p.id);
+          if (error) return toast("N\xE3o foi poss\xEDvel excluir.", false);
+          toast("Produto exclu\xEDdo.");
+          await load();
+          list();
+        };
+      }
+      function vrow(v = {}) {
+        return `<div class="vr"><input placeholder="Tamanho" value="${esc(v.size || "\xDAnico")}" maxlength="20" aria-label="Tamanho"><input placeholder="Cor" value="${esc(v.color || "\xDAnico")}" maxlength="30" aria-label="Cor"><input type="number" min="0" step="1" value="${v.qty ?? 0}" aria-label="Quantidade"><button type="button" class="btn d" data-rv aria-label="Remover">\xD7</button></div>`;
+      }
+      function form(id) {
+        const p = id ? D.prods.find((x) => x.id === id) : null, u = p || { variants: [{}], product_images: [] };
+        V.innerHTML = `<h1>${p ? "Editar produto" : "Adicionar produto"}</h1><form class="panel" id="pf"><div class="g"><div><label>Nome</label><input name="name" required minlength="2" maxlength="120" value="${esc(p?.name)}"></div><div><label>Marca</label><input name="brand" maxlength="60" value="${esc(p?.brand)}"></div>
+       <div><label>Categoria</label><select name="cat"><option value="">Sem categoria</option>${D.cats.map((c) => `<option value="${c.id}" ${p?.category_id === c.id ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select></div>
+       <div><label>Estoque m\xEDnimo</label><input name="min" type="number" min="0" step="1" required value="${p?.min_stock ?? 2}"></div>
+       <div><label>Pre\xE7o (R$)</label><input name="price" type="number" min="0.01" step="0.01" required value="${p?.price ?? ""}"></div><div><label>Pre\xE7o promocional (R$)</label><input name="promo" type="number" min="0.01" step="0.01" value="${p?.promo_price ?? ""}"></div></div>
+       <label>Descri\xE7\xE3o</label><textarea name="desc" rows="4" maxlength="3000">${esc(p?.description)}</textarea>
+       <label>Fotografias (JPG, PNG ou WebP, at\xE9 5 MB)</label><div class="imgs" id="ei">${u.product_images.map((i) => `<div data-id="${i.id}" data-path="${esc(i.path)}"><img src="${esc(sb.storage.from("product-images").getPublicUrl(i.path).data.publicUrl)}" alt=""><button type="button" class="btn d" data-ri style="position:absolute;top:0;right:0;padding:0 7px">\xD7</button></div>`).join("")}</div><input type="file" id="fi" accept="image/jpeg,image/png,image/webp" multiple>
+       <label>Varia\xE7\xF5es e estoque (tamanho, cor, quantidade)</label><div id="vs">${u.variants.map(vrow).join("")}</div><button type="button" class="btn s" id="av">Adicionar varia\xE7\xE3o</button>
+       <p style="margin-top:12px"><label style="display:inline"><input type="checkbox" name="active" style="width:auto" ${p?.active === false ? "" : "checked"}> Ativo</label> &nbsp; <label style="display:inline"><input type="checkbox" name="feat" style="width:auto" ${p?.featured ? "checked" : ""}> Destaque na p\xE1gina inicial</label> &nbsp; <label style="display:inline"><input type="checkbox" name="new" style="width:auto" ${p?.is_new ? "checked" : ""}> Lan\xE7amento</label></p>
+       <button class="btn" style="margin-top:16px" id="sv">Salvar produto</button></form>`;
+        $("#av").onclick = () => $("#vs").insertAdjacentHTML("beforeend", vrow());
+        $("#vs").onclick = (e) => {
+          if (e.target.dataset.rv !== void 0 && $("#vs").children.length > 1) e.target.closest(".vr").remove();
+        };
+        $("#ei").onclick = (e) => {
+          if (e.target.dataset.ri !== void 0) e.target.closest("div").classList.toggle("rmv");
+        };
+        $("#pf").onsubmit = async (e) => {
+          e.preventDefault();
+          const b = $("#sv");
+          b.disabled = true;
+          try {
+            await save(e.target, p);
+            toast("Produto salvo.");
+            await load();
+            show("list");
+          } catch (x) {
+            console.error(x);
+            toast(x.msg || "N\xE3o foi poss\xEDvel salvar. Verifique os dados.", false);
+          }
+          b.disabled = false;
+        };
+      }
+      async function save(f, p) {
+        const price = +f.price.value, pr = f.promo.value ? +f.promo.value : null;
+        if (pr && pr >= price) throw { msg: "O pre\xE7o promocional deve ser menor que o pre\xE7o." };
+        const vs = [...document.querySelectorAll(".vr")].map((r2) => {
+          const i = r2.querySelectorAll("input");
+          return { size: i[0].value.trim(), color: i[1].value.trim(), qty: +i[2].value };
+        });
+        const keys = /* @__PURE__ */ new Set();
+        for (const v of vs) {
+          if (!v.size || !v.color || !Number.isInteger(v.qty) || v.qty < 0) throw { msg: "Confira tamanhos, cores e quantidades." };
+          const k = v.size + "|" + v.color;
+          if (keys.has(k)) throw { msg: "H\xE1 varia\xE7\xF5es repetidas." };
+          keys.add(k);
+        }
+        const files = [...$("#fi").files];
+        for (const x of files) if (!["image/jpeg", "image/png", "image/webp"].includes(x.type) || x.size > 5242880) throw { msg: "Imagem inv\xE1lida: use JPG, PNG ou WebP de at\xE9 5 MB." };
+        const row = { name: f.name.value.trim(), brand: f.brand.value.trim() || null, description: f.desc.value.trim() || null, category_id: f.cat.value || null, price, promo_price: pr, min_stock: +f.min.value, active: f.active.checked, featured: f.feat.checked, is_new: f.new.checked };
+        const q = p ? sb.from("products").update(row).eq("id", p.id) : sb.from("products").insert(row);
+        const { data, error } = await q.select().single();
+        if (error) throw error;
+        const pid = data.id;
+        let r = await sb.from("variants").upsert(vs.map((v) => ({ ...v, product_id: pid })), { onConflict: "product_id,size,color" }).select();
+        if (r.error) throw r.error;
+        const stale = r.data && p ? p.variants.filter((o) => !keys.has(o.size + "|" + o.color)).map((o) => o.id) : [];
+        if (stale.length) await sb.from("variants").delete().in("id", stale);
+        for (const d of document.querySelectorAll("#ei .rmv")) {
+          await sb.storage.from("product-images").remove([d.dataset.path]);
+          await sb.from("product_images").delete().eq("id", d.dataset.id);
+        }
+        let sort = Date.now() % 1e5;
+        const ext = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
+        for (const x of files) {
+          const path = `${pid}/${crypto.randomUUID()}.${ext[x.type]}`;
+          const u = await sb.storage.from("product-images").upload(path, x, { contentType: x.type });
+          if (u.error) throw u.error;
+          const i = await sb.from("product_images").insert({ product_id: pid, path, sort: sort++ });
+          if (i.error) throw i.error;
+        }
+      }
+      function cats() {
+        V.innerHTML = `<h1>Categorias</h1><div class="panel"><form id="cf2" style="display:flex;gap:8px"><input name="n" placeholder="Nova categoria" required minlength="2" maxlength="60"><button class="btn">Adicionar</button></form></div><div class="panel"><table>${D.cats.map((c) => `<tr><td><input value="${esc(c.name)}" data-r="${c.id}" maxlength="60"><td style="width:170px"><button class="btn s" data-s="${c.id}">Salvar</button> <button class="btn d" data-x="${c.id}">Excluir</button></tr>`).join("")}</table></div>`;
+        const slug = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+        $("#cf2").onsubmit = async (e) => {
+          e.preventDefault();
+          const n = e.target.n.value.trim();
+          const { error } = await sb.from("categories").insert({ name: n, slug: slug(n), sort: D.cats.length + 1 });
+          if (error) return toast("N\xE3o foi poss\xEDvel criar (nome j\xE1 existe?).", false);
+          toast("Categoria criada.");
+          await load();
+          cats();
+        };
+        V.querySelector("table").onclick = async (e) => {
+          const b = e.target.closest("button");
+          if (!b) return;
+          if (b.dataset.s) {
+            const n = V.querySelector(`[data-r="${b.dataset.s}"]`).value.trim();
+            const { error } = await sb.from("categories").update({ name: n, slug: slug(n) }).eq("id", b.dataset.s);
+            return error ? toast("Erro ao salvar.", false) : (toast("Categoria salva."), load());
+          }
+          if (b.dataset.x && await ask("Excluir categoria? Os produtos ficar\xE3o sem categoria.")) {
+            const { error } = await sb.from("categories").delete().eq("id", b.dataset.x);
+            if (error) return toast("Erro ao excluir.", false);
+            toast("Categoria exclu\xEDda.");
+            await load();
+            cats();
+          }
+        };
+      }
+      function promo() {
+        V.innerHTML = `<h1>Ofertas e promo\xE7\xF5es</h1><div class="panel"><table><thead><tr><th>Produto<th>Pre\xE7o<th>Promocional<th></thead>${D.prods.map((p) => `<tr><td>${esc(p.name)}<td>${brl(p.price)}<td style="width:150px"><input type="number" min="0.01" step="0.01" value="${p.promo_price ?? ""}" data-p="${p.id}" aria-label="Promocional"><td><button class="btn s" data-s="${p.id}">Salvar</button></tr>`).join("")}</table></div>`;
+        V.querySelector("table").onclick = async (e) => {
+          const id = e.target.dataset.s;
+          if (!id) return;
+          const v = V.querySelector(`[data-p="${id}"]`).value, p = D.prods.find((x) => x.id === id);
+          if (v && +v >= +p.price) return toast("O pre\xE7o promocional deve ser menor que o pre\xE7o.", false);
+          const { error } = await sb.from("products").update({ promo_price: v ? +v : null }).eq("id", id);
+          error ? toast("Erro ao salvar.", false) : (toast("Promo\xE7\xE3o atualizada."), load());
+        };
+      }
+      function stock() {
+        V.innerHTML = `<h1>Controle de estoque</h1>${D.prods.map((p) => `<div class="panel"><b>${esc(p.name)}</b> ${badge(p)} <small>m\xEDnimo ${p.min_stock}</small>${p.variants.map((v) => `<div class="vr" style="grid-template-columns:1fr 1fr 90px"><span>${esc(v.size)}</span><span>${esc(v.color)}</span><input type="number" min="0" step="1" value="${v.qty}" data-v="${v.id}" aria-label="Quantidade ${esc(v.size)} ${esc(v.color)}"></div>`).join("")}<button class="btn s" data-s="${p.id}">Salvar estoque</button></div>`).join("") || "<p>Nenhum produto.</p>"}`;
+        V.onclick = async (e) => {
+          const id = e.target.dataset.s;
+          if (!id) return;
+          const p = D.prods.find((x) => x.id === id);
+          let ok = true;
+          for (const v of p.variants) {
+            const n = +V.querySelector(`[data-v="${v.id}"]`).value;
+            if (!Number.isInteger(n) || n < 0) {
+              return toast("Quantidade inv\xE1lida.", false);
+            }
+            if (n !== v.qty) {
+              const { error } = await sb.from("variants").update({ qty: n }).eq("id", v.id);
+              if (error) ok = false;
+            }
+          }
+          ok ? toast("Estoque atualizado.") : toast("Erro ao atualizar.", false);
+          await load();
+          stock();
+        };
+      }
+      function cfg() {
+        const F = [["store_name", "Nome da loja"], ["whatsapp", "WhatsApp (com DDD, s\xF3 n\xFAmeros, ex.: 5535999999999)"], ["instagram", "Link do Instagram"], ["address", "Endere\xE7o"], ["hours", "Hor\xE1rio de funcionamento"], ["show_qty", "Mostrar quantidade ao cliente (true/false)"]];
+        V.innerHTML = `<h1>Configura\xE7\xF5es</h1><form class="panel" id="cg">${F.map((f) => `<label>${f[1]}</label><input name="${f[0]}" maxlength="500" value="${esc(D.set[f[0]])}">`).join("")}<button class="btn" style="margin-top:16px">Salvar</button></form>`;
+        $("#cg").onsubmit = async (e) => {
+          e.preventDefault();
+          const d = Object.fromEntries(new FormData(e.target));
+          if (d.whatsapp && !/^\d{12,13}$/.test(d.whatsapp)) return toast("WhatsApp: use s\xF3 n\xFAmeros com 55 + DDD + n\xFAmero.", false);
+          if (d.instagram && !/^https:\/\//.test(d.instagram)) return toast("O link do Instagram deve come\xE7ar com https://", false);
+          const { error } = await sb.from("store_settings").upsert(Object.entries(d).map(([key, value]) => ({ key, value })));
+          error ? toast("Erro ao salvar.", false) : (toast("Configura\xE7\xF5es salvas."), load());
+        };
+      }
+      enter();
+
+    </script>
+  </body>
+</html>
