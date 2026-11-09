@@ -141,14 +141,16 @@
         $("#grid").innerHTML = l.length ? l.map(card).join("") : '<p class="empty">Nenhum produto encontrado. Tente limpar os filtros.</p>';
         obs();
       }
+      // Animação de entrada repete SEMPRE que o item entra na tela (ao descer e ao subir)
+      const revealIO = new IntersectionObserver((entries) => entries.forEach((x) => {
+        if (x.isIntersecting && x.intersectionRatio >= 0.1) x.target.classList.add("in");
+        else if (!x.isIntersecting) x.target.classList.remove("in");
+      }), { threshold: [0, 0.1] });
       function obs() {
-        const o = new IntersectionObserver((e) => e.forEach((x) => {
-          if (x.isIntersecting) {
-            x.target.classList.add("in");
-            o.unobserve(x.target);
-          }
-        }), { threshold: 0.1 });
-        document.querySelectorAll(".rv:not(.in)").forEach((el) => rm ? el.classList.add("in") : o.observe(el));
+        document.querySelectorAll(".rv").forEach((el) => {
+          if (rm) el.classList.add("in");
+          else revealIO.observe(el);
+        });
       }
       function wa(msg) {
         const n = (S.whatsapp || "").replace(/\D/g, "");
