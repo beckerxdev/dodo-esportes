@@ -1,5 +1,5 @@
 # Dodô Esportes — vitrine + painel (HTML/CSS/JS + Supabase)
-Site estático (sem build). Pastas: `index.html` (vitrine), `admin.html` (painel), `config.js`, `supabase/schema.sql`, `assets/`.
+Site estático (sem build). Arquivos na mesma pasta: `index.html`, `admin.html`, `style.css`, `config.js`. A logo e a foto da fachada já vão embutidas no `index.html`.
 
 ## 1. Supabase
 1. Crie um projeto em supabase.com.
