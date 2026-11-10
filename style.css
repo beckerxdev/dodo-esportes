@@ -339,3 +339,11 @@ h2.rv.in { animation-name: rise-x; }
   .w > span { transform: none; }
   .row .card, .row .card:hover { scale: 1; translate: none; }
 }
+
+/* Destaque do menu = produto mais recente */
+.mpromo[hidden] { display: none; }
+.mbody.sem-promo { grid-template-columns: 1fr; }
+.mpromo.sem-foto { background: linear-gradient(160deg, var(--blue), var(--violet)); }
+.mpromo small { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; opacity: .85; }
+.mpromo span { font-size: 30px; }
+.mpromo strong { font-size: 20px; }

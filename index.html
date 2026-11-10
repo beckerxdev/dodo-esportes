@@ -39,7 +39,7 @@
           <div class="mtabs" id="mtabs" role="tablist"></div>
           <div class="mbody">
             <div class="mcols" id="mcols"></div>
-            <a class="mpromo" id="mpromo" href="#c=ofertas"><span>Ofertas especiais</span><em>Ver produtos em promoção</em></a>
+            <a class="mpromo" id="mpromo" href="#" hidden></a>
           </div>
         </div>
       </div>
@@ -607,8 +607,7 @@
           montarTabs();
           tabAtiva = 0;
           renderTabs();
-          const foto = document.querySelector(".fachada");
-          if (foto) $("#mpromo").style.backgroundImage = `url("${foto.getAttribute("src")}")`;
+          renderNovo();
         }
         mega.classList.toggle("is-open", o);
         mov.classList.toggle("is-open", o);
@@ -624,7 +623,26 @@
       $("#mtabs").addEventListener("click", (e) => { const b = e.target.closest(".mtab"); if (b) setTab(+b.dataset.i); });
       $("#mtabs").addEventListener("mouseover", (e) => { const b = e.target.closest(".mtab"); if (b && matchMedia("(hover:hover)").matches) setTab(+b.dataset.i); });
       $("#mcols").onclick = (e) => { const a = e.target.closest("a"); if (!a) return; e.preventDefault(); irPara(a.getAttribute("href")); };
-      $("#mpromo").onclick = (e) => { e.preventDefault(); irPara("#c=ofertas"); };
+      $("#mpromo").onclick = (e) => {
+        e.preventDefault();
+        const id = $("#mpromo").dataset.id;
+        if (!id) return;
+        fecharMenu();
+        history.replaceState(null, "", "#p=" + id);
+        open(id);
+      };
+      // Destaque do menu: sempre o produto mais recente cadastrado (o antigo sai quando entra um novo)
+      function renderNovo() {
+        const p = prods[0], el = $("#mpromo");
+        el.hidden = !p;
+        document.querySelector(".mbody").classList.toggle("sem-promo", !p);
+        if (!p) return;
+        const foto = imgs(p)[0];
+        el.dataset.id = p.id;
+        el.classList.toggle("sem-foto", !foto);
+        el.style.backgroundImage = foto ? `url("${foto}")` : "";
+        el.innerHTML = `<small>Novidade</small><span>${esc(p.name)}</span><strong>${brl(eff(p))}</strong><em>Ver produto</em>`;
+      }
 
       // ===== Pesquisa: só a lupa; abre ao clicar =====
       const topo = document.querySelector("header");
