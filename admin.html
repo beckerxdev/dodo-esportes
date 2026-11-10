@@ -564,7 +564,8 @@
         const p = id ? D.prods.find((x) => x.id === id) : null, u = p || { variants: [{}], product_images: [] };
         V.innerHTML = `<h1>${p ? "Editar produto" : "Adicionar produto"}</h1><form class="panel" id="pf"><div class="g"><div><label>Nome</label><input name="name" required minlength="2" maxlength="120" value="${esc(p?.name)}"></div><div><label>Marca</label><input name="brand" maxlength="60" value="${esc(p?.brand)}"></div>
        <div><label>Categoria</label><select name="cat"><option value="">Sem categoria</option>${D.cats.map((c) => `<option value="${c.id}" ${p?.category_id === c.id ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select></div>
-       <div><label>Estoque mínimo</label><input name="min" type="number" min="0" step="1" required value="${p?.min_stock ?? 2}"></div>
+       <div><label>Público</label><select name="aud">${[["unissex", "Unissex"], ["masculino", "Masculino"], ["feminino", "Feminino"], ["infantil", "Infantil"]].map((o) => `<option value="${o[0]}" ${(p?.audience || "unissex") === o[0] ? "selected" : ""}>${o[1]}</option>`).join("")}</select></div>
+              <div><label>Estoque mínimo</label><input name="min" type="number" min="0" step="1" required value="${p?.min_stock ?? 2}"></div>
        <div><label>Preço (R$)</label><input name="price" type="number" min="0.01" step="0.01" required value="${p?.price ?? ""}"></div><div><label>Preço promocional (R$)</label><input name="promo" type="number" min="0.01" step="0.01" value="${p?.promo_price ?? ""}"></div></div>
        <label>Descrição</label><textarea name="desc" rows="4" maxlength="3000">${esc(p?.description)}</textarea>
        <label>Fotografias (JPG, PNG ou WebP, até 5 MB)</label><div class="imgs" id="ei">${u.product_images.map((i) => `<div data-id="${i.id}" data-path="${esc(i.path)}"><img src="${esc(sb.storage.from("product-images").getPublicUrl(i.path).data.publicUrl)}" alt=""><button type="button" class="btn d" data-ri style="position:absolute;top:0;right:0;padding:0 7px">×</button></div>`).join("")}</div><input type="file" id="fi" accept="image/jpeg,image/png,image/webp" multiple>
@@ -610,7 +611,7 @@
         }
         const files = [...$("#fi").files];
         for (const x of files) if (!["image/jpeg", "image/png", "image/webp"].includes(x.type) || x.size > 5242880) throw { msg: "Imagem inválida: use JPG, PNG ou WebP de até 5 MB." };
-        const row = { name: f.name.value.trim(), brand: f.brand.value.trim() || null, description: f.desc.value.trim() || null, category_id: f.cat.value || null, price, promo_price: pr, min_stock: +f.min.value, active: f.active.checked, featured: f.feat.checked, is_new: f.new.checked };
+        const row = { name: f.name.value.trim(), brand: f.brand.value.trim() || null, description: f.desc.value.trim() || null, category_id: f.cat.value || null, price, promo_price: pr, min_stock: +f.min.value, active: f.active.checked, featured: f.feat.checked, is_new: f.new.checked, audience: f.aud.value };
         const q = p ? sb.from("products").update(row).eq("id", p.id) : sb.from("products").insert(row);
         const { data, error } = await q.select().single();
         if (error) throw error;

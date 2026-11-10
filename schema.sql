@@ -22,6 +22,7 @@ create table products (
   active boolean not null default true,
   featured boolean not null default false,
   is_new boolean not null default false,
+  audience text not null default 'unissex' check (audience in ('masculino','feminino','infantil','unissex')),
   created_at timestamptz default now()
 );
 create table product_images (
@@ -134,5 +135,8 @@ insert into categories(name,slug,sort) values
   ('Acessórios','acessorios',9),
   ('Equipamentos de treinamento','treinamento',10),
   ('Outros esportes','outros',11);
-insert into store_settings(key,value) values('store_name','Dodô Esportes'),('whatsapp',''),('instagram','https://www.instagram.com/dodoesportestp/'),
+insert into store_settings(key,value) values('store_name','Dodô Esportes'),('whatsapp','553599773929'),('instagram','https://www.instagram.com/dodoesportestp/'),
 ('address','Pç. Cônego Vitor, 82 – Centro, Três Pontas – MG, 37190-000'),('phone','3532652905'),('show_qty','false');
+
+-- Migração: para quem já criou as tabelas antes (campo Público do menu). Pode rodar sem medo.
+alter table products add column if not exists audience text not null default 'unissex' check (audience in ('masculino','feminino','infantil','unissex'));
