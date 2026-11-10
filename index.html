@@ -6,13 +6,14 @@
     <title>Dodô Esportes | Tênis e artigos esportivos em Três Pontas</title>
     <meta name="description" content="Tudo o que você precisa para a sua prática esportiva. Compre pelo WhatsApp.">
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="stylesheet" href="css/site.css">
   </head>
   <body>
     <div id="prog"></div>
     <header>
       <div class="wrap bar">
-        <img src="images/logo.png" alt="Dodô Esportes">
+        <a class="logo" href="#" id="logo" aria-label="Dodô Esportes"><img src="assets/logo.png" alt="Dodô Esportes" width="104" height="38"></a>
         <nav id="nav">
           <a href="#catalogo" data-cat="">Todos os produtos</a>
           <a href="#catalogo" data-cat="futebol">Futebol</a>
@@ -23,7 +24,7 @@
           <a href="#catalogo" data-promo="1">Ofertas</a>
         </nav>
         <input class="search" id="hs" type="search" placeholder="Buscar produtos" aria-label="Buscar produtos" enterkeyhint="search">
-        <a class="wa" id="wa" href="https://wa.me/message/WTELA3XUMNZHM1" aria-label="WhatsApp" target="_blank" rel="noopener">W</a>
+        <a class="wa" id="wa" href="#" aria-label="WhatsApp" target="_blank" rel="noopener">W</a>
       </div>
     </header>
     <div class="hero" id="hero">
@@ -100,10 +101,11 @@
         <div class="rv">
           <h2>Instagram</h2>
           <p style="margin-bottom:18px">Novidades e lançamentos todos os dias.</p>
-          <a class="btn" id="ig" target="_blank" rel="noopener" href="https://www.instagram.com/dodoesportestp/">Seguir a loja</a>
+          <a class="btn" id="ig" target="_blank" rel="noopener" href="#">Seguir a loja</a>
         </div>
         <div class="rv loc">
           <h2>Onde estamos</h2>
+          <img class="fachada" src="assets/fachada.jpg" alt="Fachada da loja Dodô Esportes, na Praça Cônego Vitor, em Três Pontas" loading="lazy">
           <p id="addr"></p>
           <div class="hrs">
             <div class="hrs-h"><b>Horário de funcionamento</b><span class="open" id="open"></span></div>
@@ -112,6 +114,7 @@
           <div class="actions">
             <a class="btn" id="call" href="#">Ligar</a>
             <a class="btn dark" id="route" target="_blank" rel="noopener" href="#">Como chegar</a>
+            <a class="btn wpp" id="wpp" target="_blank" rel="noopener" href="#">WhatsApp</a>
           </div>
         </div>
       </div>
@@ -161,7 +164,7 @@
         });
       }
       function wa(msg) {
-        const n = (S.whatsapp || "").replace(/\D/g, "");
+        const n = (S.whatsapp || LOJA.whatsapp).replace(/\D/g, "");
         if (!n) return "";
         return `https://wa.me/${n}${msg ? "?text=" + encodeURIComponent(msg) : ""}`;
       }
@@ -412,6 +415,7 @@
       const LOJA = {
         endereco: "Praça Cônego Vitor, 82 – Centro, Três Pontas – MG, 37190-000",
         telefone: "3532652905",
+        whatsapp: "553599773929",
         horarios: [
           ["Segunda-feira", "9:00 – 18:30", 540, 1110],
           ["Terça-feira", "9:00 – 18:30", 540, 1110],
@@ -434,6 +438,9 @@
         const h = LOJA.horarios[dia], aberto = h && min >= h[2] && min < h[3];
         $("#open").textContent = aberto ? "Aberto agora" : "Fechado agora";
         $("#open").classList.toggle("off", !aberto);
+        const wlink = wa("Olá! Vim pelo site e gostaria de atendimento.");
+        $("#wa").href = wlink;
+        $("#wpp").href = wlink;
         $("#call").href = "tel:+55" + tel;
         $("#call").textContent = "Ligar " + fmtTel(tel);
         $("#route").href = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(end);

@@ -670,3 +670,21 @@ header.sm .logo img { height: 40px; }
 .fachada { display: block; width: 100%; aspect-ratio: 4 / 3; margin: 14px 0 18px; border-radius: 18px; object-fit: cover; object-position: center 35%; box-shadow: 0 24px 40px -26px rgba(10, 22, 64, .55); }
 .flogo { display: block; height: 52px; width: auto; margin-bottom: 14px; }
 .btn.wpp { background: #25d366; color: #04230f; }
+
+/* ===== LOGO OFICIAL ===== */
+.logo { padding: 4px 12px; background: #fff; border-radius: 14px; box-shadow: 0 4px 14px rgba(0, 0, 0, .25); transition: transform .3s, box-shadow .3s; }
+.logo:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 0, 0, .35); }
+.logo img, .logo:hover img { height: 38px; transform: none; }
+header.sm .logo img { height: 32px; }
+.flogo { box-sizing: content-box; height: 52px; padding: 10px 18px; background: #fff; border-radius: 16px; }
+@media (max-width: 800px) {
+  .logo { padding: 4px 9px; border-radius: 12px; }
+  .logo img { height: 30px; }
+  header.sm .logo img { height: 27px; }
+}
+
+/* Menu do topo cabe inteiro em telas médias */
+@media (min-width: 801px) {
+  .search { flex: 0 1 210px; }
+  nav a { padding: 8px 9px; font-size: 15px; }
+}
