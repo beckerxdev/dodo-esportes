@@ -45,6 +45,28 @@
       </div>
     </header>
     <div class="mov" id="mov"></div>
+    <div class="fov" id="fov"></div>
+    <aside class="fdrawer" id="fdrawer" role="dialog" aria-label="Filtrar produtos" aria-hidden="true">
+      <div class="fd-h"><h2>Filtrar</h2><button type="button" class="fd-x" id="fclose" aria-label="Fechar filtros">✕</button></div>
+      <div class="fd-b">
+        <div class="fd-s"><h3>Pesquisar</h3><input type="search" id="q" placeholder="Nome ou marca do produto" aria-label="Pesquisar produtos" autocomplete="off"></div>
+        <div class="fd-s"><h3>Categoria</h3><select id="fc" aria-label="Categoria"><option value="">Todas as categorias</option></select></div>
+        <div class="fd-s">
+          <h3>Preço</h3>
+          <div class="pfaixa">
+            <div><label for="pmin">De (R$)</label><input type="text" id="pmin" inputmode="decimal" placeholder="100,00" autocomplete="off"></div>
+            <span>a</span>
+            <div><label for="pmax">Até (R$)</label><input type="text" id="pmax" inputmode="decimal" placeholder="150,00" autocomplete="off"></div>
+          </div>
+        </div>
+        <div class="fd-s">
+          <h3>Disponibilidade</h3>
+          <label class="chip"><input type="checkbox" id="fs"><span>Só disponíveis</span></label>
+          <label class="chip"><input type="checkbox" id="fo"><span>Só ofertas</span></label>
+        </div>
+      </div>
+      <div class="fd-f"><button type="button" class="btn line" id="fx">Limpar</button><button type="button" class="btn" id="fver">Ver produtos</button></div>
+    </aside>
     <div class="hero" id="hero">
       <div class="slide on" data-word="SPORT" style="background-image:url(assets/hero-1.jpg)">
         <div class="wrap">
@@ -83,13 +105,11 @@
       <div class="wrap">
         <h2 class="rv" id="ctitle">Todos os produtos</h2>
         <p class="count" id="ccount"></p>
-        <div class="filters">
-          <input type="search" id="q" placeholder="Pesquisar produtos" aria-label="Pesquisar produtos">
-          <select id="fc" aria-label="Categoria"><option value="">Todas as categorias</option></select>
-          <select id="fp" aria-label="Faixa de preço"><option value="">Preço</option><option value="150">Até R$ 150</option><option value="300">Até R$ 300</option><option value="600">Até R$ 600</option></select>
-          <label class="chip"><input type="checkbox" id="fs"><span>Só disponíveis</span></label>
-          <label class="chip"><input type="checkbox" id="fo"><span>Só ofertas</span></label>
-          <button type="button" class="clear" id="fx">Limpar filtros</button>
+        <div class="ftool">
+          <button type="button" class="btn line" id="fbtn" aria-expanded="false" aria-controls="fdrawer">
+            <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20"><path d="M3 7h10M17 7h4M3 17h4M11 17h10"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>
+            Filtrar <span class="fn" id="fn" hidden></span>
+          </button>
         </div>
         <div class="grid" id="grid">
         </div>
@@ -162,7 +182,7 @@
       import { CFG } from "./config.js";
       const $ = (s) => document.querySelector(s), esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
       const brl = (n) => Number(n).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-      let sb, prods = [], cats = [], S = {}, st = { cat: "", q: "", max: 0, only: false, promo: false };
+      let sb, prods = [], cats = [], S = {}, st = { cat: "", q: "", min: 0, max: 0, only: false, promo: false };
       const rm = matchMedia("(prefers-reduced-motion:reduce)").matches;
       const url = (p) => sb.storage.from("product-images").getPublicUrl(p).data.publicUrl;
       const stock = (p) => p.variants.reduce((a, v) => a + v.qty, 0), promo = (p) => p.promo_price && +p.promo_price < +p.price, eff = (p) => promo(p) ? +p.promo_price : +p.price;
@@ -180,9 +200,10 @@
         obs();
       };
       function apply() {
-        const l = prods.filter((p) => (!st.cat || p.categories?.slug === st.cat) && audOk(p) && (!st.q || buscaOk(p)) && (!st.max || eff(p) <= st.max) && (!st.only || stock(p) > 0) && (!st.promo || promo(p)));
+        const l = prods.filter((p) => (!st.cat || p.categories?.slug === st.cat) && audOk(p) && (!st.q || buscaOk(p)) && precoOk(p) && (!st.only || stock(p) > 0) && (!st.promo || promo(p)));
         $("#grid").innerHTML = l.length ? l.map(card).join("") : '<p class="empty">Nenhum produto encontrado. Tente limpar os filtros.</p>';
         titulo(l.length);
+        badgeFiltros(l.length);
         obs();
       }
       // Animação de entrada repete SEMPRE que o item entra na tela (ao descer e ao subir)
@@ -279,17 +300,19 @@
       function route() {
         const h = location.hash, m = h.match(/^#c=(.+)$/);
         fecharMenu();
+        abrirFiltro(false);
         if (h.startsWith("#p=")) return open(h.slice(3));
         const mm = h.match(/^#m=([^/]*)\/([^/]*)\/(.*)$/);
         if (mm) {
           const [a, c, q] = mm.slice(1).map((x) => { const v = decodeURIComponent(x); return v === "-" ? "" : v; });
           lastView = h;
-          Object.assign(st, { aud: a, cat: c, q, promo: false, max: 0, only: false, menu: true });
+          Object.assign(st, { aud: a, cat: c, q, promo: false, min: 0, max: 0, only: false, menu: true });
           $("#q").value = q;
           $("#hs").value = "";
           $("#fc").value = c;
           $("#fo").checked = false;
-          $("#fp").value = "";
+          $("#pmin").value = "";
+          $("#pmax").value = "";
           $("#fs").checked = false;
           document.body.classList.add("cat-view");
           apply();
@@ -302,10 +325,11 @@
           lastView = h;
           if (!keepQ) { st.q = ""; $("#q").value = ""; $("#hs").value = ""; }
           keepQ = false;
-          Object.assign(st, { cat: k === "todos" || k === "ofertas" ? "" : k, promo: k === "ofertas", max: 0, only: false, aud: "", menu: false });
+          Object.assign(st, { cat: k === "todos" || k === "ofertas" ? "" : k, promo: k === "ofertas", min: 0, max: 0, only: false, aud: "", menu: false });
           $("#fc").value = st.cat;
           $("#fo").checked = st.promo;
-          $("#fp").value = "";
+          $("#pmin").value = "";
+          $("#pmax").value = "";
           $("#fs").checked = false;
           document.body.classList.add("cat-view");
           apply();
@@ -313,8 +337,8 @@
           scrollTo({ top: 0 });
         } else if (h === "" || h === "#") {
           lastView = "";
-          Object.assign(st, { cat: "", q: "", max: 0, only: false, promo: false, aud: "", menu: false });
-          ["#q", "#hs", "#fc", "#fp"].forEach((id) => { $(id).value = ""; });
+          Object.assign(st, { cat: "", q: "", min: 0, max: 0, only: false, promo: false, aud: "", menu: false });
+          ["#q", "#hs", "#fc", "#pmin", "#pmax"].forEach((id) => { $(id).value = ""; });
           ["#fs", "#fo"].forEach((id) => { $(id).checked = false; });
           document.body.classList.remove("cat-view");
           apply();
@@ -347,10 +371,6 @@
       };
       $("#fc").onchange = (e) => {
         st.cat = e.target.value;
-        apply();
-      };
-      $("#fp").onchange = (e) => {
-        st.max = +e.target.value;
         apply();
       };
       $("#fs").onchange = (e) => {
@@ -479,8 +499,8 @@
       // Limpar filtros
       $("#fx").onclick = () => {
         if (lastView) { lastView = "#c=todos"; history.replaceState(null, "", lastView); markNav(); }
-        Object.assign(st, { cat: "", q: "", max: 0, only: false, promo: false, aud: "", menu: false });
-        ["#q", "#hs", "#fc", "#fp"].forEach((id) => { $(id).value = ""; });
+        Object.assign(st, { cat: "", q: "", min: 0, max: 0, only: false, promo: false, aud: "", menu: false });
+        ["#q", "#hs", "#fc", "#pmin", "#pmax"].forEach((id) => { $(id).value = ""; });
         ["#fs", "#fo"].forEach((id) => { $(id).checked = false; });
         apply();
       };
@@ -663,6 +683,50 @@
         x0 = null;
         if (Math.abs(dx) > 40) { go((cur + (dx < 0 ? 1 : sl.length - 1)) % sl.length); clearInterval(tm); }
       }, { passive: true });
+      // ===== FILTRAR: aba lateral com categoria, faixa de preço e disponibilidade =====
+      function parseBR(v) {
+        let t = String(v || "").trim().replace(/[^\d.,]/g, "");
+        if (t.includes(",")) t = t.replace(/\./g, "").replace(",", ".");
+        const n = parseFloat(t);
+        return isNaN(n) ? 0 : n;
+      }
+      function precoOk(p) {
+        let a = st.min || 0, b = st.max || 0;
+        if (a && b && a > b) [a, b] = [b, a];
+        const v = eff(p);
+        return (!a || v >= a) && (!b || v <= b);
+      }
+      function badgeFiltros(n) {
+        const ativos = [st.cat, st.aud, st.q, st.min, st.max, st.only, st.promo].filter(Boolean).length;
+        $("#fn").textContent = ativos;
+        $("#fn").hidden = !ativos;
+        $("#fver").textContent = n === 1 ? "Ver 1 produto" : `Ver ${n} produtos`;
+      }
+      function abrirFiltro(o) {
+        $("#fdrawer").classList.toggle("is-open", o);
+        $("#fov").classList.toggle("is-open", o);
+        $("#fdrawer").setAttribute("aria-hidden", !o);
+        $("#fbtn").setAttribute("aria-expanded", o);
+        document.body.style.overflow = o ? "hidden" : "";
+        if (o) { fecharMenu(); $("#fclose").focus(); }
+      }
+      $("#fbtn").onclick = () => abrirFiltro(true);
+      $("#fclose").onclick = () => abrirFiltro(false);
+      $("#fov").onclick = () => abrirFiltro(false);
+      $("#fver").onclick = () => abrirFiltro(false);
+      addEventListener("keydown", (e) => { if (e.key === "Escape") abrirFiltro(false); });
+      ["#pmin", "#pmax"].forEach((id) => {
+        $(id).addEventListener("input", (e) => {
+          e.target.value = e.target.value.replace(/[^\d.,]/g, "");
+          st.min = parseBR($("#pmin").value);
+          st.max = parseBR($("#pmax").value);
+          apply();
+        });
+        $(id).addEventListener("blur", (e) => {
+          const n = parseBR(e.target.value);
+          e.target.value = n ? n.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "";
+        });
+      });
     </script>
   
     <script>
@@ -726,6 +790,7 @@
         document.getElementById("copy").textContent = "© " + new Date().getFullYear() + " Dodô Esportes. Todos os direitos reservados.";
         if (!ler()) criarBanner();
       })();
+
     </script>
   </body>
 </html>
