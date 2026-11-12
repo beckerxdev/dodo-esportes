@@ -140,3 +140,29 @@ insert into store_settings(key,value) values('store_name','Dodô Esportes'),('wh
 
 -- Migração: para quem já criou as tabelas antes (campo Público do menu). Pode rodar sem medo.
 alter table products add column if not exists audience text not null default 'unissex' check (audience in ('masculino','feminino','infantil','unissex'));
+
+-- =====================================================================
+-- ENDURECIMENTO DE SEGURANÇA (pode rodar mais de uma vez)
+-- =====================================================================
+-- 1) Visitantes (anon) só LEEM. Mesmo que uma regra RLS falhe, o banco nega escrita.
+revoke insert, update, delete, truncate on admins, categories, products, product_images, variants, store_settings, audit_log from anon;
+revoke all on admins, audit_log from anon;
+revoke truncate on admins, categories, products, product_images, variants, store_settings, audit_log from authenticated;
+
+-- 2) A função de auditoria só deve rodar como gatilho, nunca por chamada direta (RPC).
+revoke all on function audit() from public, anon, authenticated;
+
+-- 3) Configurações da loja precisam ter formato válido (evita links "javascript:" e números errados).
+alter table store_settings drop constraint if exists settings_valida;
+alter table store_settings add constraint settings_valida check (
+  (key <> 'instagram' or value = '' or value ~ '^https://[A-Za-z0-9.-]+(/[^[:space:]"''<>]*)?$') and
+  (key <> 'whatsapp'  or value = '' or value ~ '^[0-9]{12,13}$') and
+  (key <> 'phone'     or value = '' or value ~ '^[0-9]{10,11}$') and
+  (key <> 'show_qty'  or value in ('true', 'false'))
+);
+
+-- 4) Caminho das imagens só no formato gerado pelo painel (id-do-produto/id-da-imagem.ext).
+alter table product_images drop constraint if exists imagem_caminho_valido;
+alter table product_images add constraint imagem_caminho_valido check (
+  path ~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(jpg|png|webp)$'
+);
