@@ -617,6 +617,7 @@
       }
       function abrirMenu(o) {
         if (o) {
+          scrollTo({ top: 0, behavior: "instant" });
           montarTabs();
           tabAtiva = 0;
           renderTabs();
@@ -626,7 +627,7 @@
         mov.classList.toggle("is-open", o);
         burger.classList.toggle("is-open", o);
         burger.setAttribute("aria-expanded", o);
-        document.body.style.overflow = o ? "hidden" : "";
+        document.documentElement.style.overflow = o ? "hidden" : "";
       }
       function fecharMenu() { abrirMenu(false); }
       burger.onclick = () => { document.querySelector("header").classList.remove("searching"); abrirMenu(!mega.classList.contains("is-open")); };
@@ -710,7 +711,7 @@
         $("#fov").classList.toggle("is-open", o);
         $("#fdrawer").setAttribute("aria-hidden", !o);
         $("#fbtn").setAttribute("aria-expanded", o);
-        document.body.style.overflow = o ? "hidden" : "";
+        document.documentElement.style.overflow = o ? "hidden" : "";
         if (o) { fecharMenu(); $("#fclose").focus(); }
       }
       $("#fbtn").onclick = () => abrirFiltro(true);
