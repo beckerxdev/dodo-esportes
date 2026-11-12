@@ -348,6 +348,11 @@
       header { border-bottom: 1px solid rgba(255, 255, 255, .15); }
       .k:hover, .panel:hover { transform: none; }
     </style>
+      <script>
+      /* Ao atualizar a página, sempre começa no topo (o navegador não lembra a posição da rolagem). */
+      if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+      window.scrollTo(0, 0);
+    </script>
   </head>
   <body>
     <div id="login">
